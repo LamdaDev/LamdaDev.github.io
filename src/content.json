@@ -1,0 +1,54 @@
+{
+  "skills": [
+    {"name": "Languages", "icon": "code", "items": ["Go", "TypeScript", "JavaScript", "Python", "Java", "C++", "SQL", "C#", "Dart", "Kotlin"]},
+    {"name": "Frontend & mobile", "icon": "grid", "items": ["React", "React Native", "Expo", "HTML/CSS", "Flutter"]},
+    {"name": "Backend & infrastructure", "icon": "server", "items": ["Node.js", "Express.js", "REST APIs", "Kubernetes", "Docker", "Kafka", "Linux", "CI/CD"]},
+    {"name": "Cloud & data", "icon": "data", "items": ["AWS", "Microsoft Azure", "Databricks", "Snowflake", "PostgreSQL", "SQL Server", "MySQL", "MongoDB", "GraphQL"]},
+    {"name": "Developer tools", "icon": "tool", "items": ["Git", "GitLab", "Gerrit", "Jenkins", "SonarCloud", "Jest", "Postman", "Agile/Scrum"]},
+    {"name": "Also in the mix", "icon": "star", "items": ["Figma", "Power BI", "Azure DevOps", "AMPScript", "Salesforce Marketing Cloud", "GeoJSON", "GTFS", "Google Maps", "Google Calendar"]}
+  ],
+  "projects": [
+    {
+      "id": "transit", "name": "TransitOps Montreal", "dates": "July 2026 – Present", "status": "In progress", "status_class": "in-progress",
+      "caption": "Turning transit telemetry into a clearer picture of route health.",
+      "description": "Transit operators need a clear view of service issues. I’m building a dashboard to identify active vehicles, stale updates, route gaps, and bus bunching risk from public GTFS data and live or simulated vehicle snapshots.",
+      "tech": ["Go", "React", "TypeScript", "PostgreSQL", "GTFS"],
+      "details": ["Building the full-stack dashboard with Go, React, TypeScript, and PostgreSQL to analyze STM bus route health.", "Implementing ingestion and metrics logic for vehicle activity, update freshness, route gaps, and bunching risk.", "Designing an LLM operations analyst that recommends service actions from route telemetry through an agentic loop. This feature is still in the design stage."],
+      "url": "https://github.com/LamdaDev/TransitOps-Montreal"
+    },
+    {
+      "id": "campus", "name": "GitToCampus", "dates": "January 2026 – April 2026", "status": "1st in the cohort", "status_class": "award",
+      "caption": "Helping students find their way across campus and into the classroom.",
+      "description": "Students need practical campus and classroom routing. As Technical Lead of an 11-member Agile team, I led a mobile navigation app from Figma mockups to working interfaces. Our professor awarded it first place in the cohort.",
+      "tech": ["React Native", "TypeScript", "Expo", "GeoJSON", "Google Maps", "Google Calendar"],
+      "details": ["Led development using React Native, TypeScript, and Expo, translating Figma mockups into mobile UI.", "Implemented classroom navigation using Dijkstra’s algorithm and processed GeoJSON coordinate data.", "Integrated Google Maps and Google Calendar for campus routing and served as Technical Lead for the 11-member Agile team."],
+      "url": "https://github.com/LamdaDev/GitToCampus"
+    }
+  ],
+  "experience": [
+    {
+      "company": "Ericsson", "initials": "E", "color": "lilac", "role": "Software Developer Intern", "dates": "January 2026 – August 2026", "location": "Montreal, QC",
+      "summary": "Developed fault management logic in Go for a 5G microservice containerized with Docker and deployed on Kubernetes, handling 6 raise/clear alarm events across 3 fault conditions and publishing fault telemetry to Kafka.",
+      "result": "10+ components migrated from C++ to Go · 99% code coverage",
+      "details": ["Refactored and migrated 10+ service components from C++ to Go, implementing custom JSON serialization, bitmask-based policy evaluation, and TAI group lookup logic while achieving 99% code coverage in SonarCloud.", "Assumed Scrum Master responsibilities after a team reorganization, leading daily stand-ups and sprint planning while removing blockers for teammates."]
+    },
+    {
+      "company": "The CSL Group Inc.", "initials": "CSL", "color": "mint", "role": "Software Developer Intern", "dates": "May 2024 – August 2024 and May 2025 – August 2025", "location": "Montreal, QC",
+      "summary": "Built scalable ETL pipelines using Python and SQL across Databricks, Snowflake, Azure, and SQL Server to migrate millions of production shipment records for maritime logistics operations.",
+      "result": "Azure DevOps workflow runtime reduced by 60 minutes per run",
+      "details": ["Migrated 10,000+ XREF records and 10+ Power BI datasets into Databricks, standardizing data sources and reducing Azure DevOps workflow runtime by 60 minutes per run."]
+    },
+    {
+      "company": "Ubisoft", "initials": "U", "color": "peach", "role": "Frontend Developer Intern", "dates": "September 2023 – December 2023", "location": "Montreal, QC",
+      "summary": "Developed responsive HTML/CSS/JavaScript templates with AMPScript and Salesforce Marketing Cloud for batch, lifecycle, and real-time customer campaigns.",
+      "result": "Reusable components for international campaigns",
+      "details": ["Implemented reusable content components for localization, improving maintainability and consistency across international marketing campaigns."]
+    },
+    {
+      "company": "Categen Ventures", "initials": "C", "color": "blue", "role": "Software Developer Intern", "dates": "April 2022 – July 2022", "location": "Montreal, QC",
+      "summary": "Translated requirements into Figma mockups and built new mobile interfaces in Flutter for a point-of-sale app.",
+      "result": "From Figma requirements to Flutter interfaces",
+      "details": ["Built new features in Dart, quickly ramping up on the language and the macOS environment within the first week."]
+    }
+  ]
+}

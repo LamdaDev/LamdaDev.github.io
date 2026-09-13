@@ -1,0 +1,51 @@
+/* Native SVG scenes. Action states change discretely; only gestures animate. */
+.scene-definitions { position:absolute; overflow:hidden; pointer-events:none; }
+.scene-wrap { aspect-ratio: 13 / 10; width:100%; }
+.avatar-scene { display:block; width:100%; height:auto; overflow:visible; font-family:"DM Sans",sans-serif; }
+.avatar-scene .scene-state { display:none; }
+.avatar-scene[data-state="order"] [data-pose~="order"],
+.avatar-scene[data-state="sip"] [data-pose~="sip"],
+.avatar-scene[data-state="game"] [data-pose~="game"],
+.avatar-scene[data-state="code"] [data-pose~="code"],
+.avatar-scene[data-state="drink"] [data-pose~="drink"],
+.avatar-scene[data-state="nap"] [data-pose~="nap"],
+.avatar-scene[data-state="bench"] [data-pose~="bench"],
+.avatar-scene[data-state="rest"] [data-pose~="rest"] { display:inline; }
+.avatar-scene * { animation-play-state:paused !important; }
+.avatar-scene[data-running="true"] * { animation-play-state:running !important; }
+.wave-arm { transform-origin:317px 297px; animation:hello-wave 4s ease-in-out infinite; }
+@keyframes hello-wave { 0%,8%,50%,100%{transform:rotate(0deg)} 16%,32%{transform:rotate(13deg)} 24%,40%{transform:rotate(-9deg)} }
+.scene-spark { animation:soft-spark 4s ease-in-out infinite; }
+@keyframes soft-spark { 0%,100%{opacity:.55}50%{opacity:1} }
+.order-hand { transform-origin:390px 274px; animation:order-gesture 1.2s ease-in-out infinite; }
+@keyframes order-gesture { 0%,100%{transform:rotate(-5deg)}50%{transform:rotate(6deg)} }
+.order-cup { animation:serve-cup 2.4s ease-in-out both; }
+@keyframes serve-cup { 0%,25%{transform:translateX(-70px)}70%,100%{transform:translateX(0)} }
+.receive-boba { animation:receive-boba 2.4s steps(1,end) both; }
+@keyframes receive-boba { 0%,64%{opacity:0}65%,100%{opacity:1} }
+.boba-sip { transform-origin:342px 264px; animation:boba-sip 3.8s ease-in-out infinite; }
+@keyframes boba-sip { 0%,15%,85%,100%{transform:translate(0,0)}32%,65%{transform:translate(0,-10px)} }
+.sip-hearts { animation:happy-sip 3.8s ease-in-out infinite; }
+@keyframes happy-sip { 0%,15%,100%{opacity:0;transform:translateY(5px)}35%,65%{opacity:.85;transform:translateY(-3px)}85%{opacity:0;transform:translateY(-9px)} }
+.typing-hand { transform-origin:170px 272px; animation:key-tap .43s ease-in-out infinite alternate; }
+.eye-blink { opacity:0; animation:little-blink 5.8s steps(1,end) infinite; }
+@keyframes little-blink { 0%,91%,96%,100%{opacity:0}92%,95%{opacity:1} }
+@keyframes key-tap { to{transform:rotate(-3deg) translateY(-2px)} }
+.mouse-hand { animation:mouse-move 2.2s ease-in-out infinite alternate; }
+@keyframes mouse-move { to{transform:translateX(3px)} }
+.game-player { animation:pixel-jump 4.5s ease-in-out infinite; }
+@keyframes pixel-jump { 0%,100%{transform:translate(0,0)}25%{transform:translate(29px,-19px)}50%{transform:translate(60px,0)}75%{transform:translate(97px,-27px)} }
+.code-cursor { animation:cursor-glow 1.8s ease-in-out infinite; }
+@keyframes cursor-glow { 50%{opacity:.3} }
+.coke-sip { transform-origin:213px 260px; animation:coke-sip 2s ease-in-out infinite; }
+@keyframes coke-sip { 0%,100%{transform:translate(0,0) rotate(0)}25%,70%{transform:translate(0,-8px) rotate(-12deg)} }
+.nap-letters { animation:sleep-bubble 3s ease-in-out infinite; }
+@keyframes sleep-bubble { 0%,100%{opacity:.4;transform:translateY(0)}65%{opacity:1;transform:translateY(-7px)} }
+.bar-lift { animation:bench-lift 1.65s ease-in-out infinite; }
+@keyframes bench-lift { 0%,100%{transform:translateY(0)}50%{transform:translateY(39px)} }
+.bench-upper-arm { transform-origin:255px 264px; animation:bench-elbows 1.65s ease-in-out infinite; }
+@keyframes bench-elbows { 0%,100%{transform:scaleY(1)}50%{transform:scaleY(.43)} }
+.water-sip { transform-origin:224px 238px; animation:water-sip 4s ease-in-out infinite; }
+@keyframes water-sip { 0%,15%,100%{transform:translate(0,0)}35%,75%{transform:translate(0,-12px) rotate(-10deg)} }
+html[data-motion="paused"] .avatar-scene * { animation-play-state:paused !important; }
+@media(prefers-reduced-motion:reduce) { .avatar-scene * { animation:none !important; } .sip-hearts { opacity:.7; } }
