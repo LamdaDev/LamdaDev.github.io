@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+import { bobaFlavors, type BobaFlavor } from '../boba';
 
 /** Small, locally owned geometry library. No browser APIs run at module import. */
 export function createProps() {
@@ -87,18 +88,29 @@ export function createProps() {
     }
     return group;
   }
-  /** Origin is cup bottom. Opaque milk tea and modeled pearls remain full. */
+  /** Reassign cached materials so a cup never recolors other props sharing them. */
+  function setBobaFlavor(cup: THREE.Group, flavor: BobaFlavor) {
+    const colors = bobaFlavors[flavor];
+    const tea = cup.getObjectByName('boba-tea');
+    const top = cup.getObjectByName('boba-top');
+    if (tea instanceof THREE.Mesh) tea.material = material(colors.tea);
+    if (top instanceof THREE.Mesh) top.material = material(colors.top);
+  }
+  /** Origin is cup bottom. Opaque tea and modeled pearls remain full. */
   function drink(kind: 'boba' | 'coke' | 'water') {
     const group = new THREE.Group();
     if (kind === 'boba') {
-      group.add(cylinder(.16, .12, .37, '#d7af88', [0, .185, 0]));
-      group.add(cylinder(.174, .174, .035, palette.cream, [0, .387, 0]));
-      group.add(cylinder(.158, .158, .012, '#ead0a8', [0, .407, 0]));
+      group.name = 'boba-cup';
+      const tea = cylinder(.16, .12, .37, bobaFlavors['milk-tea'].tea, [0, .185, 0]); tea.name = 'boba-tea';
+      const lid = cylinder(.174, .174, .035, palette.cream, [0, .387, 0]); lid.name = 'boba-lid';
+      const top = cylinder(.158, .158, .012, bobaFlavors['milk-tea'].top, [0, .407, 0]); top.name = 'boba-top';
+      group.add(tea, lid, top);
       for (let i = 0; i < 11; i++) {
         const angle = i * 2.4;
-        group.add(ball(.025, '#493436', [Math.sin(angle) * .13, .055 + (i % 3) * .045, Math.cos(angle) * .13]));
+        const pearl = ball(.025, '#493436', [Math.sin(angle) * .13, .055 + (i % 3) * .045, Math.cos(angle) * .13]);
+        pearl.name = `boba-pearl-${i}`; group.add(pearl);
       }
-      group.add(rod([.03, .39, 0], [.03, .61, -.16], .018, palette.purple));
+      const straw = rod([.03, .39, 0], [.03, .61, -.16], .018, palette.purple); straw.name = 'boba-straw'; group.add(straw);
     } else if (kind === 'coke') {
       group.add(cylinder(.115, .115, .35, '#25232e', [0, .175, 0]));
       group.add(cylinder(.105, .105, .025, '#c7c4c1', [0, .36, 0]));
@@ -115,5 +127,5 @@ export function createProps() {
   function dispose() {
     geometry.forEach(g => g.dispose()); materials.forEach(m => m.dispose()); textures.forEach(t => t.dispose());
   }
-  return { palette, box, ball, cylinder, torus, rod, text, shadow, star, plant, drink, dispose };
+  return { palette, box, ball, cylinder, torus, rod, text, shadow, star, plant, drink, setBobaFlavor, dispose };
 }

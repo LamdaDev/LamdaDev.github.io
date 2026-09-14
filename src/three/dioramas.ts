@@ -1,12 +1,14 @@
 import * as THREE from 'three';
 import { createCharacter, type CharacterAction } from './character';
 import { createProps } from './props';
+import type { BobaFlavor } from '../boba';
 
 export type SceneKind = 'hero' | 'about' | 'skills' | 'projects' | 'experience';
 export type Diorama = {
   root: THREE.Group;
   camera: { position: [number, number, number]; target: [number, number, number]; span: number };
   update: (action: CharacterAction, time: number) => void;
+  setBobaFlavor?: (flavor: BobaFlavor) => void;
   dispose: () => void;
 };
 
@@ -21,6 +23,7 @@ export function createDiorama(kind: SceneKind): Diorama {
   root.add(character.root);
   const camera: Diorama['camera'] = { position: [7, 5.7, 11], target: [0, 1.25, 0], span: 5.4 };
   let animate: (action: CharacterAction, time: number) => void = () => undefined;
+  let setBobaFlavor: Diorama['setBobaFlavor'];
   const add = (...items: THREE.Object3D[]) => root.add(...items);
   const at = <T extends THREE.Object3D>(item: T, x: number, y: number, z: number) => { item.position.set(x, y, z); return item; };
   const ink = '#534c66';
@@ -143,13 +146,20 @@ export function createDiorama(kind: SceneKind): Diorama {
     add(p.box(1.32, .9, .025, c.cream, [-1.85, 1.91, -1.35]));
     add(at(p.text(['MILK TEA', 'MATCHA  /  TARO', 'extra pearls? yes.'], 1.21, .76, '#80604f', undefined, 55), -1.85, 1.91, -1.333));
     const shelf = p.box(1.11, .08, .43, c.cream, [-.19, 1.8, -1.27]); add(shelf);
-    for (let i = 0; i < 3; i++) { const cup = p.drink('boba'); cup.scale.setScalar(.7); cup.position.set(-.51 + i * .31, 1.85, -1.26); add(cup); }
+    for (let i = 0; i < 3; i++) { const cup = p.drink('boba'); cup.name = `boba-shelf-${i}`; cup.scale.setScalar(.7); cup.position.set(-.51 + i * .31, 1.85, -1.26); add(cup); }
     const shopPlant = p.plant(.82); shopPlant.position.set(-2.51, 1.21, -.4); add(shopPlant);
     character.root.position.set(1.2, 0, .44); character.root.rotation.y = -.15;
     const rug = p.box(1.65, .025, 1.45, '#edc5af', [1.12, .008, .5], .012); add(rug);
     const customerShadow = p.shadow(.55, .45, .1); customerShadow.position.set(1.2, .027, .44); add(customerShadow);
-    const inHand = p.drink('boba'); inHand.position.set(0, -.12, 0); character.hands.right.add(inHand);
-    const servedCup = p.drink('boba'); add(servedCup);
+    const inHand = p.drink('boba'); inHand.name = 'boba-in-hand'; inHand.position.set(0, -.12, 0); character.hands.right.add(inHand);
+    const servedCup = p.drink('boba'); servedCup.name = 'boba-served'; add(servedCup);
+    let flavor: BobaFlavor = 'milk-tea';
+    setBobaFlavor = (nextFlavor) => {
+      if (nextFlavor === flavor) return;
+      p.setBobaFlavor(inHand, nextFlavor);
+      p.setBobaFlavor(servedCup, nextFlavor);
+      flavor = nextFlavor;
+    };
     const handPosition = new THREE.Vector3();
     const counterPosition = new THREE.Vector3(-.37, 1.2, .11);
     const happy = sparkle(2.18, 2.37, .41, .11, '#e3a372');
@@ -307,5 +317,5 @@ export function createDiorama(kind: SceneKind): Diorama {
   }
   const initial: Record<SceneKind, CharacterAction> = { hero: 'wave', about: 'sip', skills: 'game', projects: 'code', experience: 'rest' };
   update(initial[kind], 0);
-  return { root, camera, update, dispose() { p.dispose(); character.dispose(); } };
+  return { root, camera, update, setBobaFlavor, dispose() { p.dispose(); character.dispose(); } };
 }

@@ -9,7 +9,10 @@ This record describes checks on the local portfolio implementation. It does not 
 | TypeScript | Type checking passed. |
 | Production build | Vite build and HTML prerender completed. |
 | Sequence unit tests | All five tests passed. |
-| Browser regression suite | All 14 tests passed in 49.4 seconds; no tests skipped. |
+| Browser regression suite | All 17 tests passed in 54.9 seconds after adding the boba picker; no tests skipped. |
+| Hero résumé link | After adding the top download link, build/type checking and five targeted content/responsive checks passed. Both links resolve to the intended PDF; the hero link stays on the opening screen at 1440, 768, 390, and 320px. |
+| Boba flavor controls | Three distinct WebGL renders at a fixed pose, no clock restart, selected state maintained across scrolling, keyboard selection at 320px, reduced motion, and all three fallback image choices passed. |
+| Boba materials | Both moving cups have the expected tea/top colors. Flavor changes preserve other materials, geometry, poses, and order-to-sip handoff. Six cached tea materials are reused and each is disposed once. |
 | Desktop layout, 1440px wide | No horizontal overflow observed. |
 | Tablet layout, 768px wide | No horizontal overflow observed. |
 | Phone layout, 390px wide | No horizontal overflow observed. |
@@ -21,6 +24,7 @@ This record describes checks on the local portfolio implementation. It does not 
 | Facial and greeting poses | Nap hides open eyes and shows closed eyes; the waving wrist changes independently while the head position remains stable. |
 | Static GLB export | 665,384-byte export; the `glTF` signature, version 2 header, and declared file length passed checks. |
 | Static fallbacks | All five PNGs were regenerated from the actual Three.js scenes after final framing and gym layout corrections. |
+| Boba fallback variants | About previews were regenerated for milk tea, matcha, and taro; seven total scene preview assets are available. |
 | Content and local assets | 49 skills, two projects, four employers, both CSL date ranges, the résumé PDF, and the five scene PNGs passed browser checks. |
 | Opening layouts | The avatar and primary CTA are visible in the checked desktop, tablet, phone, and narrow layouts; no horizontal overflow was detected. |
 | Keyboard behavior | Skip link, visible focus, and expandable details passed the browser checks. |
@@ -44,16 +48,16 @@ The final production build and prerender completed with these reported output si
 
 | Output | Uncompressed | Gzip |
 | --- | ---: | ---: |
-| Lazy Three.js scene chunk | 922.59 kB | 247.95 kB |
-| Core application JavaScript | 221.51 kB | 69.68 kB |
-| CSS | 30.48 kB | 7.53 kB |
-| Prerendered HTML | 30,980 bytes | Not measured |
+| Lazy Three.js scene chunk | 923.25 kB | 248.21 kB |
+| Core application JavaScript | 222.98 kB | 70.11 kB |
+| CSS | 32.30 kB | 7.90 kB |
+| Prerendered HTML | 32,103 bytes | Not measured |
 
 The scene chunk is substantial and loads separately from the portfolio content. The page uses one shared WebGL context, device pixel ratio 1 at viewport widths up to 600px, and a cap of 1.5 on larger viewports. These are build artifact sizes and rendering settings, not network timings, frame-rate results, or a Lighthouse score.
 
 ## Final verification status
 
-The local production build, type check, five sequence tests, 14 browser tests, model checks, and five static preview captures are complete. After the browser suite passed, two small-label CSS colors were darkened, their contrast ratios were calculated, and the production build/type check passed again. Both local preview URLs returned HTTP 200. The browser coverage and qualifications are listed above. No publishing or deployment was performed.
+The boba update passed production build/type checking, the model checks, and all 17 browser tests. Three About previews were captured from the updated scene. The five unchanged sequence tests passed during the original portfolio verification. The browser coverage and qualifications are listed above. No publishing or deployment was performed.
 
 ## Reproduce the checks
 

@@ -192,3 +192,21 @@ html[data-motion='paused'] { scroll-behavior: auto; }
 /* Small labels retain normal-text contrast on their pastel surfaces. */
 .scroll-cue { color: #756474; }
 .contact-art-label { color: var(--muted); }
+
+.hero-resume.resume-link { display: flex; width: fit-content; min-height: 32px; margin-top: 12px; color: var(--purple); font-size: 13px; }
+.hero-resume + .hero-footnote { margin-top: 8px; }
+
+/* A small, tactile menu beneath the boba diorama. */
+.boba-picker { position: relative; z-index: 2; min-width: 0; margin: 0 16px 15px; padding: 0; border: 0; }
+.boba-picker legend { width: 100%; padding: 0; margin-bottom: 10px; text-align: center; color: var(--ink); font-size: 13px; font-weight: 700; }
+.boba-options { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; }
+.boba-option { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-height: 44px; padding: 9px 10px; border: 1px solid #bdaba1; border-radius: 9px; background: #fffdfa; color: var(--ink); font-size: 12px; font-weight: 650; box-shadow: 0 2px 0 #d8c6b7; }
+.boba-option[aria-pressed='true'] { border-color: var(--purple); background: var(--lavender); box-shadow: 0 2px 0 var(--purple); }
+.boba-option:hover:not(:disabled) { border-color: var(--purple); }
+.boba-option:active:not(:disabled) { transform: translateY(2px); box-shadow: none; }
+.boba-option:disabled { opacity: .6; }
+.boba-check { width: 10px; font-size: 12px; color: var(--purple); visibility: hidden; }
+.boba-option[aria-pressed='true'] .boba-check { visibility: visible; }
+.boba-swatch { position: relative; display: inline-block; flex-shrink: 0; width: 14px; height: 19px; border: 1px solid #615144; border-radius: 2px 2px 4px 4px; background: radial-gradient(circle at 30% 76%, #493436 1.2px, transparent 1.5px), radial-gradient(circle at 72% 70%, #493436 1.2px, transparent 1.5px), radial-gradient(circle at 55% 91%, #493436 1.2px, transparent 1.5px), var(--boba-color); }
+.boba-swatch::before { content: ''; position: absolute; top: -5px; right: 3px; width: 2px; height: 6px; background: var(--purple); transform: rotate(12deg); }
+@media (max-width: 359px) { .boba-picker { margin-inline: 9px; }.boba-options { gap: 6px; }.boba-option { gap: 5px; padding-inline: 7px; font-size: 11px; } }

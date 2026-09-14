@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { SceneSlot } from './components/SceneSlot';
 import { MotionButton } from './components/MotionButton';
+import { BobaPicker } from './components/BobaPicker';
 import { coursework, experience, links, projects, skills } from './content';
 
 type IconName = 'arrow' | 'external' | 'download' | 'code' | 'window' | 'server' | 'data' | 'tool' | 'star' | 'heart' | 'mail' | 'boba' | 'gym' | 'game';
@@ -41,6 +42,7 @@ function SceneWindow({ kind, label, caption }: { kind: 'about' | 'skills' | 'pro
   return <figure className={`scene-window scene-window--${kind}`}>
     <div className="window-bar"><span className="window-dots" aria-hidden="true"><i /><i /><i /></span><span>{label}</span><span className="window-corner" aria-hidden="true">↗</span></div>
     <SceneSlot kind={kind} />
+    {kind === 'about' && <BobaPicker />}
     <figcaption><span className="caption-dot" aria-hidden="true" />{caption}</figcaption>
   </figure>;
 }
@@ -75,7 +77,14 @@ export default function App() {
     <main id="main">
       <section className="hero shell" id="top" aria-labelledby="hero-title">
         <div className="hero-art"><span className="hero-hello pixel-label"><span aria-hidden="true">✦</span> HELLO, WORLD!</span><div className="hero-orbit" aria-hidden="true" /><SceneSlot kind="hero" /><span className="hero-sticker"><Icon name="heart" />Code, curiosity & boba.</span><PixelStar className="hero-star-one" /><PixelStar className="hero-star-two" /></div>
-        <div className="hero-copy"><p className="eyebrow"><span className="eyebrow-line" />SOFTWARE DEVELOPER & CURIOUS HUMAN</p><h1 id="hero-title"><span>Daniel</span><span>Lam<span className="name-dot">.</span><PixelStar className="name-star" /></span></h1><p className="hero-value">I build reliable backend services, data pipelines, and intuitive web and mobile applications.</p><div className="hero-actions"><a className="button button-primary" href="#projects">View my work<Icon name="arrow" /></a><a className="button button-secondary" href="#contact">Get in touch<Icon name="mail" /></a></div><p className="hero-footnote"><span aria-hidden="true">⌁</span> Software Engineering Co-op student<br className="mobile-break" /> at Concordia University</p></div>
+        <div className="hero-copy">
+          <p className="eyebrow"><span className="eyebrow-line" />SOFTWARE DEVELOPER & CURIOUS HUMAN</p>
+          <h1 id="hero-title"><span>Daniel</span><span>Lam<span className="name-dot">.</span><PixelStar className="name-star" /></span></h1>
+          <p className="hero-value">I build reliable backend services, data pipelines, and intuitive web and mobile applications.</p>
+          <div className="hero-actions"><a className="button button-primary" href="#projects">View my work<Icon name="arrow" /></a><a className="button button-secondary" href="#contact">Get in touch<Icon name="mail" /></a></div>
+          <a className="resume-link hero-resume" href={links.resume} download="Daniel_Lam_CV_SWE.pdf"><Icon name="download" />Download résumé<span>PDF</span></a>
+          <p className="hero-footnote"><span aria-hidden="true">⌁</span> Software Engineering Co-op student<br className="mobile-break" /> at Concordia University</p>
+        </div>
         <a href="#about" className="scroll-cue"><span className="scroll-mouse" aria-hidden="true" />A little more about me<span aria-hidden="true">↓</span></a>
       </section>
       <div className="chapter-divider shell" aria-hidden="true"><span /><PixelStar /><span /></div>

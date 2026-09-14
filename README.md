@@ -36,6 +36,9 @@ The website uses React, TypeScript, Vite, Three.js, React Three Fiber, and selec
 | [`src/styles.css`](src/styles.css) | Page layout, responsive rules, typography, colors, and spacing |
 | [`src/components/SceneSlot.tsx`](src/components/SceneSlot.tsx) | Accessible scene descriptions and static preview images |
 | [`src/components/MotionButton.tsx`](src/components/MotionButton.tsx) | Global animation control |
+| [`src/components/BobaPicker.tsx`](src/components/BobaPicker.tsx) | Keyboard-accessible milk tea, matcha, and taro buttons |
+| [`src/boba.ts`](src/boba.ts) | Flavor names, tea colors, and fallback image paths |
+| [`src/runtime/boba.ts`](src/runtime/boba.ts) | Page-local flavor state shared by React and the renderer |
 | [`src/three/character.ts`](src/three/character.ts) | Character geometry, facial expressions, limbs, and activity poses |
 | [`src/three/dioramas.ts`](src/three/dioramas.ts) | Scene environments, furniture, props, cameras, and prop choreography |
 | [`src/three/props.ts`](src/three/props.ts) | Reusable modeled objects, materials, labels, and decorative shapes |
@@ -67,6 +70,19 @@ To adjust the character's appearance, edit the palette, proportions, hair sweep 
 Activity changes are immediate cuts. Gestures animate within each activity. To change activity durations, edit `activityAt()` in `src/runtime/sequence.ts` and its boundary tests. Keep gesture periods in `character.ts` and prop movement in `dioramas.ts` consistent with the sequence.
 
 The production page uses one WebGL canvas with scissored viewports. Models initialize as their sections become visible. Rendering uses a device pixel ratio of 1 at viewport widths up to 600px and caps it at 1.5 on larger viewports. Hidden and offscreen scenes stop advancing; reduced motion selects a static representative pose. The global pause preference is stored in `localStorage` when available. Failed or unavailable WebGL leaves the static previews accessible.
+
+### Choose Daniel’s boba
+
+The About scene includes three flavor buttons: **Milk tea**, **Matcha**, and **Taro**. Selecting a flavor changes Daniel’s drink during ordering and sipping without restarting the animation. It also works with paused or reduced motion and updates the fallback image when WebGL is unavailable. The selected button has a checkmark and an accessible pressed state. The choice stays selected while browsing the page and resets to milk tea on reload; no browser storage is used for flavor choices. Without JavaScript, the default artwork remains and the buttons are disabled.
+
+Edit flavor names and colors in `src/boba.ts`; the material setter in `src/three/dioramas.ts` updates only the served and held cups. Shelf cups, pearls, lids, straws, and the rest of the scene keep their materials. After changing colors, regenerate the three About previews with the development server running:
+
+```powershell
+npm.cmd run capture -- --boba
+npm.cmd run build
+```
+
+The static assets are `public/previews/about.png`, `about-matcha.png`, and `about-taro.png`. The normal `npm.cmd run capture` command also refreshes these variants. Boba browser coverage lives in `tests/boba.spec.ts`; `scripts/check-models.mjs` checks actual cup materials, unchanged geometry, and material reuse/disposal.
 
 ### Inspect and export the models
 
@@ -120,19 +136,21 @@ The preview area uses a **16:10** aspect ratio. `contain` preserves the full scr
 
 ### Résumé and portrait
 
+The résumé can be downloaded beneath the hero buttons and again in Contact. Both links use the same `links.resume` asset path.
+
 - Résumé: [`public/assets/Daniel_Lam_CV_SWE.pdf`](public/assets/Daniel_Lam_CV_SWE.pdf). Replace the PDF with the same filename, or update `links.resume` in `src/content.ts` and the download filename in `src/App.tsx`.
 - Portrait reference: [`public/assets/chibi.jpg`](public/assets/chibi.jpg). Replacing this file alone does not remodel the procedural character; update `character.ts` to reflect changes to the reference.
 
 ### Refresh the static scene previews
 
-The five fallback PNGs are captures of the actual Three.js scenes, not separate illustrations. With the development server running:
+The fallback PNGs are captures of the actual Three.js scenes, including two additional boba flavor variants. With the development server running:
 
 ```powershell
 npx.cmd playwright install chromium
 npm.cmd run capture
 ```
 
-This writes `hero.png`, `about.png`, `skills.png`, `projects.png`, and `experience.png` under `public/previews/`. Rebuild afterward so `dist/` receives the updated assets. Commit the previews with source changes that alter a scene's appearance.
+This writes `hero.png`, `about.png`, `about-matcha.png`, `about-taro.png`, `skills.png`, `projects.png`, and `experience.png` under `public/previews/`. Rebuild afterward so `dist/` receives the updated assets. Commit the previews with source changes that alter a scene's appearance.
 
 ## Design tokens
 

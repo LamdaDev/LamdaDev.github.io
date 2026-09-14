@@ -81,7 +81,12 @@ test('renders complete factual content, native anchors and valid local downloads
     return ids.filter((id, index) => ids.indexOf(id) !== index);
   });
   expect(duplicates).toEqual([]);
-  await expect(page.locator('.resume-link')).toHaveAttribute('href', '/assets/Daniel_Lam_CV_SWE.pdf');
+  const resumeLinks = page.locator('.resume-link');
+  await expect(resumeLinks).toHaveCount(2);
+  for (const link of await resumeLinks.all()) {
+    await expect(link).toHaveAttribute('href', '/assets/Daniel_Lam_CV_SWE.pdf');
+    await expect(link).toHaveAttribute('download', 'Daniel_Lam_CV_SWE.pdf');
+  }
   const pdf = await request.get('/assets/Daniel_Lam_CV_SWE.pdf');
   expect(pdf.ok()).toBeTruthy();
   expect((await pdf.body()).subarray(0, 5).toString()).toBe('%PDF-');
@@ -100,7 +105,7 @@ for (const [width, height] of [[1440, 1000], [768, 1024], [390, 844], [320, 760]
     await openPortfolio(page);
     await waitForScene(page, 'hero');
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
-    for (const selector of ['h1', '.hero .scene-slot', '.hero-actions']) {
+    for (const selector of ['h1', '.hero .scene-slot', '.hero-actions', '.hero-resume']) {
       const bounds = await page.locator(selector).boundingBox();
       expect(bounds).not.toBeNull();
       expect(bounds!.x).toBeGreaterThanOrEqual(0);

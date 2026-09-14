@@ -4,6 +4,7 @@ import { AmbientLight, DirectionalLight, HemisphereLight, OrthographicCamera, Sc
 import { createDiorama } from '../three/dioramas';
 import { entries, subscribeRegistry } from './registry';
 import { getMotion, subscribeMotion } from './motion';
+import { getBobaFlavor, subscribeBoba } from './boba';
 import { activityAt, advanceElapsed, type Action, type SceneKind } from './sequence';
 
 type Model = ReturnType<typeof createDiorama>;
@@ -35,6 +36,7 @@ export function Compositor() {
     window.addEventListener('resize', wake);
     const unsubMotion = subscribeMotion(wake);
     const unsubRegistry = subscribeRegistry(wake);
+    const unsubBoba = subscribeBoba(wake);
     window.__portfolio = {
       snapshot: () => [...entries.values()].map(entry => ({ kind: entry.kind, elapsed: entry.elapsed, visible: entry.visible, action: entry.element.dataset.action ?? '', rendered: entry.element.dataset.rendered === 'true' })),
       pose: (kind, action, time = 0) => { const entry = entries.get(kind); if (entry) entry.override = { action, time }; wake(); },
@@ -44,7 +46,7 @@ export function Compositor() {
     wake();
     return () => {
       observer.disconnect(); window.removeEventListener('scroll', wake); window.removeEventListener('resize', wake);
-      unsubMotion(); unsubRegistry();
+      unsubMotion(); unsubRegistry(); unsubBoba();
       views.current.forEach(view => view.model.dispose()); views.current.clear();
     };
   }, [invalidate]);
@@ -89,6 +91,11 @@ export function Compositor() {
         const camera = new OrthographicCamera(-4, 4, 3, -3, .1, 100);
         camera.position.fromArray(model.camera.position); camera.lookAt(...model.camera.target);
         view = { model, scene, camera }; views.current.set(entry.kind, view);
+      }
+      // Flavor changes request a frame even when motion is paused or reduced.
+      if (view.model.setBobaFlavor) {
+        view.model.setBobaFlavor(getBobaFlavor());
+        entry.element.dataset.bobaFlavor = getBobaFlavor();
       }
       const activity = entry.override ?? activityAt(entry.kind, entry.elapsed, motion.reduced);
       entry.element.dataset.action = activity.action;
