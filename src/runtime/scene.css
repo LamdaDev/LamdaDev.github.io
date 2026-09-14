@@ -1,0 +1,9 @@
+.scene-slot { position: relative; width: 100%; aspect-ratio: 1.3; min-width: 0; }
+.scene-fallback { display: block; width: 100%; height: 100%; object-fit: contain; }
+.scene-slot[data-rendered="true"] .scene-fallback { visibility: hidden; }
+.scene-webgl-layer { position: fixed; inset: 0; z-index: 1; pointer-events: none; overflow: hidden; }
+.scene-webgl-layer canvas { pointer-events: none !important; }
+.motion-button { display: inline-grid; place-content: center; width: 36px; height: 36px; padding: 0; border: 1px solid #baa9cc; background: transparent; color: #514061; border-radius: 9px; font: 700 16px/1 sans-serif; cursor: pointer; }
+.motion-button:hover { background: #eae1ff; }
+.motion-button:disabled { cursor: default; }
+.motion-button[hidden] { display: none; }
