@@ -4,6 +4,15 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#fff9f0" />
+    <script>
+      // Apply the visitor's explicit choice before styles or portfolio content paint.
+      try {
+        const theme = localStorage.getItem('daniel-theme') === 'night' ? 'night' : 'day';
+        document.documentElement.dataset.theme = theme;
+        document.documentElement.style.colorScheme = theme === 'night' ? 'dark' : 'light';
+        document.querySelector('meta[name="theme-color"]').content = theme === 'night' ? '#191923' : '#fff9f0';
+      } catch { document.documentElement.dataset.theme = 'day'; }
+    </script>
     <meta name="description" content="Daniel Lam — software developer and Concordia Software Engineering Co-op student. Backend services, data pipelines, and thoughtful web and mobile applications." />
     <title>Daniel Lam · Developer & curious human</title>
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />

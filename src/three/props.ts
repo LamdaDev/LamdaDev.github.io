@@ -13,6 +13,15 @@ export function createProps() {
     if (!materials.has(key)) materials.set(key, new THREE.MeshStandardMaterial({ color, roughness, metalness }));
     return materials.get(key)!;
   }
+  /** Keep animated emission separate from ordinary props sharing a base color. */
+  function emissiveMaterial(name: string, color: string, emission: string) {
+    const key = `emissive/${name}`;
+    if (!materials.has(key)) {
+      const mat = new THREE.MeshStandardMaterial({ color, roughness: .73, emissive: emission, emissiveIntensity: 0 });
+      mat.name = name; materials.set(key, mat);
+    }
+    return materials.get(key)! as THREE.MeshStandardMaterial;
+  }
   function mesh(key: string, make: () => THREE.BufferGeometry, color: string, position: number[] = [0, 0, 0]) {
     if (!geometry.has(key)) geometry.set(key, make());
     const item = new THREE.Mesh(geometry.get(key), material(color));
@@ -62,6 +71,22 @@ export function createProps() {
     materials.set(`shadow-${materials.size}`, mat);
     const geo = new THREE.CircleGeometry(1, 48); geometry.set(`shadow-${geometry.size}`, geo);
     const item = new THREE.Mesh(geo, mat); item.rotation.x = -Math.PI / 2; item.scale.set(width, depth, 1); item.position.y = .016;
+    return item;
+  }
+  /** One soft quad provides a restrained light halo without a bloom render pass. */
+  function glow(name: string, width: number, height: number, color: string) {
+    const canvas = document.createElement('canvas'); canvas.width = 64; canvas.height = 64;
+    const context = canvas.getContext('2d')!;
+    const gradient = context.createRadialGradient(32, 32, 0, 32, 32, 32);
+    gradient.addColorStop(0, 'rgba(255,255,255,.8)');
+    gradient.addColorStop(.35, 'rgba(255,255,255,.35)');
+    gradient.addColorStop(1, 'rgba(255,255,255,0)');
+    context.fillStyle = gradient; context.fillRect(0, 0, 64, 64);
+    const texture = new THREE.CanvasTexture(canvas); textures.add(texture);
+    const mat = new THREE.MeshBasicMaterial({ color, map: texture, transparent: true, opacity: 0, depthWrite: false, side: THREE.DoubleSide, blending: THREE.AdditiveBlending });
+    mat.name = `${name}-material`; materials.set(`glow/${name}`, mat);
+    const geo = new THREE.PlaneGeometry(width, height); geometry.set(`glow/${name}`, geo);
+    const item = new THREE.Mesh(geo, mat); item.name = name;
     return item;
   }
   function star(size: number, color: string) {
@@ -127,5 +152,5 @@ export function createProps() {
   function dispose() {
     geometry.forEach(g => g.dispose()); materials.forEach(m => m.dispose()); textures.forEach(t => t.dispose());
   }
-  return { palette, box, ball, cylinder, torus, rod, text, shadow, star, plant, drink, setBobaFlavor, dispose };
+  return { palette, box, ball, cylinder, torus, rod, text, shadow, glow, emissiveMaterial, star, plant, drink, setBobaFlavor, dispose };
 }

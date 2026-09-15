@@ -1,0 +1,18 @@
+/* One browser-owned transition drives both CSS colors and scene lighting. */
+@property --night-mix {
+  syntax: '<number>';
+  inherits: false;
+  initial-value: 0;
+}
+html { --night-mix: 0; }
+html[data-theme='night'] { --night-mix: 1; }
+.scene-explorer-header-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+html[data-theme-ready='true'] {
+  transition:
+    background-color var(--theme-duration, 800ms) var(--theme-easing, ease-in-out),
+    color var(--theme-duration, 800ms) var(--theme-easing, ease-in-out),
+    --night-mix var(--theme-duration, 800ms) var(--theme-easing, ease-in-out);
+}
+@media (prefers-reduced-motion: reduce) {
+  html[data-theme-ready='true'] { transition: none !important; }
+}

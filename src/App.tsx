@@ -1,7 +1,9 @@
 import type { ReactNode } from 'react';
 import { SceneSlot } from './components/SceneSlot';
 import { MotionButton } from './components/MotionButton';
+import { ThemeButton } from './components/ThemeButton';
 import { BobaPicker } from './components/BobaPicker';
+import { ExploreSceneButton, SceneExplorerProvider } from './components/SceneExplorer';
 import { coursework, experience, links, projects, skills } from './content';
 
 type IconName = 'arrow' | 'external' | 'download' | 'code' | 'window' | 'server' | 'data' | 'tool' | 'star' | 'heart' | 'mail' | 'boba' | 'gym' | 'game';
@@ -40,7 +42,7 @@ function SectionLabel({ number, children }: { number: string; children: ReactNod
 
 function SceneWindow({ kind, label, caption }: { kind: 'about' | 'skills' | 'projects' | 'experience'; label: string; caption: string }) {
   return <figure className={`scene-window scene-window--${kind}`}>
-    <div className="window-bar"><span className="window-dots" aria-hidden="true"><i /><i /><i /></span><span>{label}</span><span className="window-corner" aria-hidden="true">↗</span></div>
+    <div className="window-bar"><span className="window-dots" aria-hidden="true"><i /><i /><i /></span><span>{label}</span><ExploreSceneButton kind={kind} className="window-corner" /></div>
     <SceneSlot kind={kind} />
     {kind === 'about' && <BobaPicker />}
     <figcaption><span className="caption-dot" aria-hidden="true" />{caption}</figcaption>
@@ -71,12 +73,12 @@ function ProjectCard({ project }: { project: typeof projects[number] }) {
 }
 
 export default function App() {
-  return <>
+  return <SceneExplorerProvider>
     <a className="skip-link" href="#main">Skip to content</a>
-    <header className="site-header"><div className="nav-shell"><Brand /><nav className="main-nav" aria-label="Main navigation"><a href="#about">About</a><a href="#skills">Skills</a><a href="#projects">Projects</a><a href="#experience">Experience</a><a href="#contact">Contact</a></nav><div className="nav-actions"><MotionButton /><a className="nav-hello" href={`mailto:${links.email}`}>Say hello<Icon name="external" /></a></div></div></header>
+    <header className="site-header"><div className="nav-shell"><Brand /><nav className="main-nav" aria-label="Main navigation"><a href="#about">About</a><a href="#skills">Skills</a><a href="#projects">Projects</a><a href="#experience">Experience</a><a href="#contact">Contact</a></nav><div className="nav-actions"><ThemeButton /><MotionButton /><a className="nav-hello" href={`mailto:${links.email}`}>Say hello<Icon name="external" /></a></div></div></header>
     <main id="main">
       <section className="hero shell" id="top" aria-labelledby="hero-title">
-        <div className="hero-art"><span className="hero-hello pixel-label"><span aria-hidden="true">✦</span> HELLO, WORLD!</span><div className="hero-orbit" aria-hidden="true" /><SceneSlot kind="hero" /><span className="hero-sticker"><Icon name="heart" />Code, curiosity & boba.</span><PixelStar className="hero-star-one" /><PixelStar className="hero-star-two" /></div>
+        <div className="hero-art"><span className="hero-hello pixel-label"><span aria-hidden="true">✦</span> HELLO, WORLD!</span><div className="hero-orbit" aria-hidden="true" /><SceneSlot kind="hero" /><ExploreSceneButton kind="hero" className="hero-explore" /><span className="hero-sticker"><Icon name="heart" />Code, curiosity & boba.</span><PixelStar className="hero-star-one" /><PixelStar className="hero-star-two" /></div>
         <div className="hero-copy">
           <p className="eyebrow"><span className="eyebrow-line" />SOFTWARE DEVELOPER & CURIOUS HUMAN</p>
           <h1 id="hero-title"><span>Daniel</span><span>Lam<span className="name-dot">.</span><PixelStar className="name-star" /></span></h1>
@@ -95,5 +97,5 @@ export default function App() {
       <section className="contact-section shell" id="contact" aria-labelledby="contact-title"><div className="contact-panel"><div className="contact-copy content-layer"><SectionLabel number="05">LET’S CONNECT</SectionLabel><h2 id="contact-title">Good things start<br />with a <span className="underline-accent">hello.</span></h2><p>Have a software engineering opportunity or something interesting to build together? I’d love to hear about it.</p><a className="contact-email" href={`mailto:${links.email}`}>{links.email}<Icon name="external" /></a><div className="contact-actions"><a className="button button-primary" href={`mailto:${links.email}`}>Let’s talk<Icon name="arrow" /></a><a className="resume-link" href={links.resume} download="Daniel_Lam_CV_SWE.pdf"><Icon name="download" />Download résumé<span>PDF</span></a></div></div><div className="contact-art" aria-hidden="true"><PixelStar className="contact-star-one" /><span className="mail-shadow" /><div className="pixel-envelope"><span className="envelope-back" /><span className="envelope-note"><svg viewBox="0 0 40 34"><path d="M0 4h4V0h12v4h8V0h12v4h4v16h-4v4h-4v4h-4v4h-4v2h-8v-2h-4v-4H8v-4H4v-4H0Z" fill="currentColor" /></svg></span><span className="envelope-front" /></div><PixelStar className="contact-star-two" /><span className="contact-art-label pixel-label">SAY HELLO!</span></div></div></section>
     </main>
     <footer className="site-footer shell content-layer"><Brand /><p>Made with care, code & a little boba.</p><nav aria-label="Social links"><a href={links.github} target="_blank" rel="noreferrer">GitHub<Icon name="external" /><span className="sr-only"> (opens in a new tab)</span></a><a href={links.linkedin} target="_blank" rel="noreferrer">LinkedIn<Icon name="external" /><span className="sr-only"> (opens in a new tab)</span></a><a href={`mailto:${links.email}`}>Email<Icon name="external" /></a></nav></footer>
-  </>;
+  </SceneExplorerProvider>;
 }

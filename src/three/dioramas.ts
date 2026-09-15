@@ -8,6 +8,7 @@ export type Diorama = {
   root: THREE.Group;
   camera: { position: [number, number, number]; target: [number, number, number]; span: number };
   update: (action: CharacterAction, time: number) => void;
+  setNightMix: (mix: number) => void;
   setBobaFlavor?: (flavor: BobaFlavor) => void;
   dispose: () => void;
 };
@@ -24,6 +25,7 @@ export function createDiorama(kind: SceneKind): Diorama {
   const camera: Diorama['camera'] = { position: [7, 5.7, 11], target: [0, 1.25, 0], span: 5.4 };
   let animate: (action: CharacterAction, time: number) => void = () => undefined;
   let setBobaFlavor: Diorama['setBobaFlavor'];
+  const nightEffects: Array<(mix: number) => void> = [];
   const add = (...items: THREE.Object3D[]) => root.add(...items);
   const at = <T extends THREE.Object3D>(item: T, x: number, y: number, z: number) => { item.position.set(x, y, z); return item; };
   const ink = '#534c66';
@@ -71,13 +73,34 @@ export function createDiorama(kind: SceneKind): Diorama {
   }
   function monitor(gaming: boolean) {
     const group = new THREE.Group();
+    group.name = 'desk-monitor';
     group.add(p.box(.64, .065, .4, ink, [0, .04, 0]));
     group.add(p.box(.105, .35, .09, ink, [0, .21, -.06]));
     group.add(p.box(1.75, 1.13, .15, ink, [0, .92, -.04]));
-    group.add(p.box(1.59, .94, .025, '#343249', [0, .95, .05], .012));
+    const screenPanel = p.box(1.59, .94, .025, '#343249', [0, .95, .05], .012);
+    screenPanel.name = 'night-monitor-screen';
+    const screenMaterial = p.emissiveMaterial('night-monitor-screen-material', '#343249', '#8badeb');
+    screenPanel.material = screenMaterial; group.add(screenPanel);
     group.add(p.ball(.022, c.mint, [.71, .415, .042]));
     group.add(at(p.text(gaming ? 'STAR QUEST' : 'daniel / workspace', 1.25, .16, '#cbbdeb', undefined, 60), 0, 1.35, .071));
     const active = new THREE.Group(); active.position.set(0, .95, .085); group.add(active);
+    const halo = p.glow('night-monitor-halo', 2.12, 1.43, '#8badeb');
+    halo.position.set(0, .95, .071); group.add(halo);
+    const screenLight = new THREE.PointLight('#a8c8ff', 0, 4.2, 2);
+    screenLight.name = 'night-monitor-light'; screenLight.position.set(.25, 1.06, .52); group.add(screenLight);
+    const contentMaterials = new Set<THREE.MeshStandardMaterial>();
+    const enableScreenEmission = () => active.traverse(object => {
+      if (!(object instanceof THREE.Mesh) || !(object.material instanceof THREE.MeshStandardMaterial)) return;
+      const color = `#${object.material.color.getHexString()}`;
+      const mat = p.emissiveMaterial(`night-monitor-content-${color}`, color, color);
+      object.material = mat; contentMaterials.add(mat);
+    });
+    nightEffects.push(mix => {
+      screenMaterial.emissiveIntensity = .28 * mix;
+      contentMaterials.forEach(mat => { mat.emissiveIntensity = .45 * mix; });
+      halo.material.opacity = .14 * mix;
+      screenLight.intensity = .85 * mix;
+    });
     if (gaming) {
       // An original little pixel world, built from real low-poly meshes.
       for (const [x, y, w] of [[-.55, -.25, .43], [.13, -.06, .45], [.55, .13, .31]]) {
@@ -90,6 +113,7 @@ export function createDiorama(kind: SceneKind): Diorama {
       player.add(p.box(.11, .12, .025, c.mint, [0, 0, 0], .008));
       player.add(p.box(.15, .065, .025, c.mint, [0, -.06, 0], .007));
       player.add(p.ball(.01, ink, [.025, .025, .026])); active.add(player);
+      enableScreenEmission();
       return { group, player };
     }
     const lineColors = ['#b8d8c2', '#cab7ee', '#efc591', '#b9cfe8'];
@@ -99,7 +123,28 @@ export function createDiorama(kind: SceneKind): Diorama {
       active.add(p.box(.25 + (i % 2) * .17, .03, .014, lineColors[(i + 1) % 4], [-.04 + indent, .22 - i * .075, 0], .004));
     }
     const cursor = p.box(.055, .045, .02, c.cream, [.4, -.23, .01], .005); active.add(cursor);
+    enableScreenEmission();
     return { group, player: cursor };
+  }
+
+  function deskLamp() {
+    const lamp = new THREE.Group(); lamp.name = 'desk-task-lamp';
+    lamp.add(p.cylinder(.2, .2, .05, c.purple, [.37, 1.25, -.37]));
+    lamp.add(p.rod([.37, 1.27, -.37], [.32, 1.98, -.45], .035, c.purple));
+    lamp.add(p.rod([.32, 1.98, -.45], [-.07, 2.17, -.31], .035, c.purple));
+    const shade = p.cylinder(.105, .23, .23, c.purple, [-.08, 2.10, -.31]); shade.rotation.z = -.35; lamp.add(shade);
+    const bulb = p.ball(.09, '#ffe5aa', [-.11, 2.01, -.31]); bulb.name = 'night-desk-bulb';
+    const bulbMaterial = p.emissiveMaterial('night-desk-bulb-material', '#ffe5aa', '#ffd398');
+    bulb.material = bulbMaterial; lamp.add(bulb);
+    const light = new THREE.PointLight('#ffcc91', 0, 3.5, 2);
+    light.name = 'night-desk-light'; light.position.set(-.11, 1.98, -.25); lamp.add(light);
+    const halo = p.glow('night-desk-halo', .7, .7, '#ffce8b'); halo.position.set(-.11, 2.01, -.205); lamp.add(halo);
+    nightEffects.push(mix => {
+      bulbMaterial.emissiveIntensity = 1.3 * mix;
+      light.intensity = 1.25 * mix;
+      halo.material.opacity = .18 * mix;
+    });
+    add(lamp);
   }
 
   if (kind === 'hero') {
@@ -192,6 +237,7 @@ export function createDiorama(kind: SceneKind): Diorama {
     const keys = keyboard(); keys.position.set(.615, 1.27, .93); keys.rotation.y = -.35; add(keys);
     const mouse = p.ball(.115, c.white, [1.13, 1.29, .713], [.72, .45, 1]); add(mouse);
     const screen = monitor(gaming); screen.group.position.set(-1.13, 1.23, -.35); screen.group.rotation.y = .57; add(screen.group);
+    deskLamp();
     // Cable routed under the desk, so all objects read as a connected setup.
     add(p.rod([-1.1, 1.19, -.41], [-1.15, .2, -.58], .017, ink));
     const tower = new THREE.Group();
@@ -233,12 +279,7 @@ export function createDiorama(kind: SceneKind): Diorama {
         mouse.position.z = .713 + Math.sin(time * 1.4) * .012;
       };
     } else {
-      // A small articulated task lamp and a real modeled can.
-      add(p.cylinder(.2, .2, .05, c.purple, [.37, 1.25, -.37]));
-      add(p.rod([.37, 1.27, -.37], [.32, 1.98, -.45], .035, c.purple));
-      add(p.rod([.32, 1.98, -.45], [-.07, 2.17, -.31], .035, c.purple));
-      const shade = p.cylinder(.105, .23, .23, c.purple, [-.08, 2.10, -.31]); shade.rotation.z = -.35; add(shade);
-      const bulb = p.ball(.09, '#ffe5aa', [-.11, 2.01, -.31]); add(bulb);
+      // A real modeled can moves between the desk and Daniel's hand.
       const deskCoke = p.drink('coke'); deskCoke.position.set(-.2, 1.23, 1.08); add(deskCoke);
       const handCoke = p.drink('coke'); handCoke.position.set(0, -.17, 0); character.hands.right.add(handCoke);
       const zzz = new THREE.Group();
@@ -317,5 +358,9 @@ export function createDiorama(kind: SceneKind): Diorama {
   }
   const initial: Record<SceneKind, CharacterAction> = { hero: 'wave', about: 'sip', skills: 'game', projects: 'code', experience: 'rest' };
   update(initial[kind], 0);
-  return { root, camera, update, setBobaFlavor, dispose() { p.dispose(); character.dispose(); } };
+  const setNightMix = (mix: number) => {
+    const clamped = THREE.MathUtils.clamp(mix, 0, 1);
+    nightEffects.forEach(apply => apply(clamped));
+  };
+  return { root, camera, update, setNightMix, setBobaFlavor, dispose() { p.dispose(); character.dispose(); } };
 }

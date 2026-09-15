@@ -9,9 +9,12 @@ This record describes checks on the local portfolio implementation. It does not 
 | TypeScript | Type checking passed. |
 | Production build | Vite build and HTML prerender completed. |
 | Sequence unit tests | All five tests passed. |
-| Browser regression suite | All 17 tests passed in 54.9 seconds after adding the boba picker; no tests skipped. |
+| Browser regression suite | All 23 tests passed in 36.1 seconds after adding scene exploration; no tests skipped. |
 | Hero résumé link | After adding the top download link, build/type checking and five targeted content/responsive checks passed. Both links resolve to the intended PDF; the hero link stays on the opening screen at 1440, 768, 390, and 320px. |
 | Boba flavor controls | Three distinct WebGL renders at a fixed pose, no clock restart, selected state maintained across scrolling, keyboard selection at 320px, reduced motion, and all three fallback image choices passed. |
+| Enlarged scene viewers | All five open from the keyboard, retain the same canvas/context, contain focus, and restore trigger focus on Escape. Camera rotation changes an actual frozen render; keyboard, mouse drag, wheel zoom, and reset passed. |
+| Viewer continuity and fallback | The selected boba flavor and sipping sequence continue, other scene clocks stop, page scroll restores on close, and both missing WebGL and context loss preserve an enlarged preview and operable close controls. |
+| Viewer on a narrow phone | At 320px, controls fit within the viewport; deliberate touch rotation works with reduced motion while animation clocks stay fixed. |
 | Boba materials | Both moving cups have the expected tea/top colors. Flavor changes preserve other materials, geometry, poses, and order-to-sip handoff. Six cached tea materials are reused and each is disposed once. |
 | Desktop layout, 1440px wide | No horizontal overflow observed. |
 | Tablet layout, 768px wide | No horizontal overflow observed. |
@@ -48,16 +51,16 @@ The final production build and prerender completed with these reported output si
 
 | Output | Uncompressed | Gzip |
 | --- | ---: | ---: |
-| Lazy Three.js scene chunk | 923.25 kB | 248.21 kB |
-| Core application JavaScript | 222.98 kB | 70.11 kB |
-| CSS | 32.30 kB | 7.90 kB |
-| Prerendered HTML | 32,103 bytes | Not measured |
+| Lazy Three.js scene chunk | 944.85 kB | 252.99 kB |
+| Core application JavaScript | 230.65 kB | 72.25 kB |
+| CSS | 37.34 kB | 8.86 kB |
+| Prerendered HTML | 34,226 bytes | Not measured |
 
 The scene chunk is substantial and loads separately from the portfolio content. The page uses one shared WebGL context, device pixel ratio 1 at viewport widths up to 600px, and a cap of 1.5 on larger viewports. These are build artifact sizes and rendering settings, not network timings, frame-rate results, or a Lighthouse score.
 
 ## Final verification status
 
-The boba update passed production build/type checking, the model checks, and all 17 browser tests. Three About previews were captured from the updated scene. The five unchanged sequence tests passed during the original portfolio verification. The browser coverage and qualifications are listed above. No publishing or deployment was performed.
+The scene exploration update passed production build/type checking, all five sequence tests, and all 23 browser tests. The enlarged boba shop was visually inspected on desktop and the gym viewer at 320px. The earlier model and boba material checks remain documented above; the viewer reuses those unchanged models. The browser coverage and qualifications are listed above. No publishing or deployment was performed.
 
 ## Reproduce the checks
 

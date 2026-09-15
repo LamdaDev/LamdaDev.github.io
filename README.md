@@ -35,6 +35,9 @@ The website uses React, TypeScript, Vite, Three.js, React Three Fiber, and selec
 | [`src/App.tsx`](src/App.tsx) | Page sections, copy, navigation, project cards, and project concept previews |
 | [`src/styles.css`](src/styles.css) | Page layout, responsive rules, typography, colors, and spacing |
 | [`src/components/SceneSlot.tsx`](src/components/SceneSlot.tsx) | Accessible scene descriptions and static preview images |
+| [`src/components/SceneExplorer.tsx`](src/components/SceneExplorer.tsx) | Explore buttons, modal viewer, focus management, and camera controls |
+| [`src/runtime/explorer.ts`](src/runtime/explorer.ts) | Viewer state shared by the page and renderer |
+| [`src/runtime/explorationCamera.ts`](src/runtime/explorationCamera.ts) | Orbit controls, zoom limits, and reset framing |
 | [`src/components/MotionButton.tsx`](src/components/MotionButton.tsx) | Global animation control |
 | [`src/components/BobaPicker.tsx`](src/components/BobaPicker.tsx) | Keyboard-accessible milk tea, matcha, and taro buttons |
 | [`src/boba.ts`](src/boba.ts) | Flavor names, tea colors, and fallback image paths |
@@ -70,6 +73,14 @@ To adjust the character's appearance, edit the palette, proportions, hair sweep 
 Activity changes are immediate cuts. Gestures animate within each activity. To change activity durations, edit `activityAt()` in `src/runtime/sequence.ts` and its boundary tests. Keep gesture periods in `character.ts` and prop movement in `dioramas.ts` consistent with the sequence.
 
 The production page uses one WebGL canvas with scissored viewports. Models initialize as their sections become visible. Rendering uses a device pixel ratio of 1 at viewport widths up to 600px and caps it at 1.5 on larger viewports. Hidden and offscreen scenes stop advancing; reduced motion selects a static representative pose. The global pause preference is stored in `localStorage` when available. Failed or unavailable WebGL leaves the static previews accessible.
+
+### Explore every scene
+
+The expand button in each scene window, including the greeting, opens an enlarged interactive diorama. Drag with a mouse or one finger to rotate; use the mouse wheel or pinch to zoom. The visible arrow, zoom, and **Reset view** buttons provide the same controls. With the scene focused, use the arrow keys to rotate, `+` / `-` to zoom, and `Home` to reset.
+
+The native modal dialog moves focus inside, keeps Tab navigation within its controls, and closes with **Escape** or the close button. Closing restores focus to the original expand button and restores the page's scroll position. The viewer's animation button shares the header's pause preference; device reduced-motion settings are respected while deliberate camera movement remains available.
+
+The existing canvas moves into the dialog's top layer and renders the same model with a separate orbit camera. No additional WebGL context or duplicate model is created. Background scene clocks stop while exploring; the selected animation and boba flavor continue. Closing restores the card's original camera. Unavailable WebGL displays an enlarged static preview with camera controls disabled. Without JavaScript, explore buttons are disabled and all portfolio content remains available.
 
 ### Choose Daniel’s boba
 
@@ -195,4 +206,4 @@ Browser tests default to `http://127.0.0.1:4173`. If needed, set `PREVIEW_URL` t
 
 For manual visual review, `node scripts/inspect-scenes.mjs` captures all activity poses from the development studio and `node scripts/inspect-page.mjs` captures responsive page layouts. `node scripts/check-models.mjs` checks bar-to-hand alignment across a lifting activity, the racked bar, closed nap eyes, the independent wave, and a static GLB export. These scripts require the development server on port 5173. Local evidence is written under the ignored `test-results/` folder.
 
-The final verification run passed all five sequence tests and all 14 browser tests. See [`docs/VERIFICATION.md`](docs/VERIFICATION.md) for model checks, measured build sizes, browser coverage, and the limits of that evidence.
+See [`docs/VERIFICATION.md`](docs/VERIFICATION.md) for the latest sequence and browser test results, model checks, measured build sizes, and the limits of that evidence. Viewer coverage lives in `tests/explorer.spec.ts`.
