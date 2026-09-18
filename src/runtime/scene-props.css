@@ -1,0 +1,37 @@
+/* Invisible projection anchors retain forgiving touch targets without covering
+   the artwork. The real props and the labeled buttons remain clickable. */
+.scene-prop-marker { position: absolute; width: 21px; height: 21px; transform: translate(-50%, -50%); visibility: hidden; pointer-events: none; }
+.scene-slot:not([data-props-ready='true']) .scene-prop-marker, .scene-explorer-stage:not([data-props-ready='true']) .scene-prop-marker, .scene-slot:not([data-rendered='true']) .scene-prop-marker, .scene-explorer-stage:not([data-rendered='true']) .scene-prop-marker { display: none; }
+.scene-slot[data-hover-prop], .scene-explorer-stage[data-hover-prop] { cursor: pointer; }
+.scene-slot:focus { outline: none; }
+.scene-slot:focus-visible::after { content: ''; position: absolute; z-index: 3; inset: 5px; border: 3px solid var(--purple); border-radius: 9px; pointer-events: none; }
+
+.scene-prop-details { position: relative; z-index: 2; flex-shrink: 0; min-width: 0; margin: 0 16px 14px; }
+.scene-prop-hint { margin-bottom: 7px; color: var(--muted); text-align: center; font-size: 10px; line-height: 1.6; }
+.scene-prop-hint strong { font-weight: 700; }
+.scene-prop-buttons { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+.scene-prop-buttons button { display: flex; align-items: center; justify-content: center; gap: 5px; min-width: 0; min-height: 44px; padding: 6px 7px; border: 1px solid color-mix(in srgb, var(--muted) 40%, transparent); border-radius: 9px; background: var(--surface); color: var(--ink); font-size: 11px; font-weight: 600; line-height: 1.4; }
+.scene-prop-buttons button:hover:not(:disabled) { border-color: var(--purple); background: var(--lavender); }
+.scene-prop-buttons button[aria-expanded='true'] { border-color: var(--purple); background: var(--lavender); }
+.scene-prop-buttons button:disabled { opacity: .65; }
+.scene-prop-button-dot { flex-shrink: 0; color: var(--purple); font-size: 14px; font-weight: 700; line-height: 1; }
+.scene-prop-note { display: flex; align-items: flex-start; gap: 7px; margin-top: 9px; padding: 11px 7px 11px 13px; border: 1px solid var(--line); border-left: 3px solid var(--purple); border-radius: 4px 10px 10px 4px; background: var(--surface); }
+.scene-prop-note > div { min-width: 0; padding-top: 2px; }
+.scene-prop-note-title { color: var(--ink); font-size: 12px; line-height: 1.5; font-weight: 750; }
+.scene-prop-note-body { margin-top: 4px; color: var(--muted); font-size: 12px; line-height: 1.65; overflow-wrap: anywhere; }
+.scene-prop-dismiss { display: grid; place-items: center; flex-shrink: 0; width: 44px; height: 44px; padding: 0; border: 1px solid transparent; border-radius: 9px; background: transparent; color: var(--muted); font-size: 23px; line-height: 1; }
+.scene-prop-dismiss:hover { background: var(--lavender); color: var(--ink); border-color: var(--purple); }
+.scene-prop-noscript { color: var(--muted); font-size: 12px; line-height: 1.65; margin-top: 9px; }
+.scene-prop-noscript ul { padding-left: 18px; }
+.scene-prop-noscript li { margin-top: 8px; }
+.scene-prop-details--hero { margin: 0 12px 0; }
+.hero-art .hero-sticker { position: relative; bottom: auto; left: auto; display: flex; width: max-content; margin: 9px auto 0; transform: rotate(-4deg); }
+.hero-art .hero-orbit { inset: 34px 8% auto; height: auto; aspect-ratio: 1.55; }
+.scene-explorer-panel > .scene-prop-details { margin: 0; padding: 12px 20px; border-top: 1px solid var(--line); background: var(--cream); }
+.scene-explorer-panel > .scene-prop-details .scene-prop-buttons, .scene-explorer-panel > .scene-prop-details .scene-prop-announcement { width: min(560px, 100%); margin-inline: auto; }
+
+html[data-theme-ready='true'] :is(.scene-prop-marker, .scene-prop-buttons button, .scene-prop-note, .scene-prop-dismiss, .scene-explorer-panel > .scene-prop-details) { transition: background-color var(--theme-duration) var(--theme-easing), border-color var(--theme-duration) var(--theme-easing), box-shadow var(--theme-duration) var(--theme-easing); }
+html[data-theme-ready='true'] :is(.scene-prop-marker, .scene-prop-hint, .scene-prop-buttons button, .scene-prop-button-dot, .scene-prop-note-title, .scene-prop-note-body, .scene-prop-dismiss) { transition: color var(--theme-duration) var(--theme-easing), background-color var(--theme-duration) var(--theme-easing), border-color var(--theme-duration) var(--theme-easing), box-shadow var(--theme-duration) var(--theme-easing); }
+@media (max-width: 359px) { .scene-prop-details { margin-inline: 10px; }.scene-prop-buttons { gap: 5px; }.scene-prop-buttons button { gap: 4px; padding-inline: 5px; }.scene-prop-hint { font-size: 9px; } }
+@media (max-width: 559px) { .scene-explorer-panel > .scene-prop-details { padding: 10px 13px; } }
+@media (prefers-reduced-motion: reduce) { .scene-prop-details *, .scene-prop-marker { transition: none !important; } }

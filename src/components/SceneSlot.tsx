@@ -3,6 +3,7 @@ import { registerScene } from '../runtime/registry';
 import type { SceneKind } from '../runtime/sequence';
 import { bobaFlavors, bobaPreview } from '../boba';
 import { useBobaFlavor } from '../runtime/boba';
+import { ScenePropDetails } from './ScenePropDetails';
 
 const descriptions: Record<SceneKind, string> = {
   hero: 'A 3D chibi Daniel with wavy dark hair, glasses, and a black shirt waves hello.',
@@ -18,7 +19,7 @@ export function SceneSlot({ kind }: { kind: SceneKind }) {
     ? `Daniel orders ${bobaFlavors[flavor].label.toLowerCase()} in a miniature boba shop, then enjoys an endless boba break.`
     : descriptions[kind];
   useEffect(() => ref.current ? registerScene(kind, ref.current) : undefined, [kind]);
-  return <div ref={ref} className={`scene-slot scene-${kind}`} data-scene-kind={kind} role="img" aria-label={description}>
+  return <><div ref={ref} className={`scene-slot scene-${kind}`} data-scene-kind={kind} role="group" aria-label={description} tabIndex={-1}>
     <img className="scene-fallback" src={kind === 'about' ? bobaPreview(flavor) : `/previews/${kind}.png`} alt="" aria-hidden="true" width="780" height="600" loading={kind === 'hero' ? 'eager' : 'lazy'} />
-  </div>;
+  </div><ScenePropDetails kind={kind} surfaceRef={ref} /></>;
 }

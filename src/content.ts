@@ -37,25 +37,25 @@ export const projects = [
 
 export const experience = [
   {
-    company: 'Ericsson', initial: 'E', tone: 'lavender', role: 'Software Developer Intern', dates: 'January 2026 – August 2026',
+    company: 'Ericsson', logo: '/assets/companies/ericsson.png', tone: 'lavender', role: 'Software Developer Intern', dates: 'January 2026 – August 2026',
     description: 'Developed fault management logic in Go for a 5G microservice, containerized with Docker and deployed on Kubernetes.',
     highlight: '10+ components migrated from C++ to Go · 99% code coverage in SonarCloud',
     details: ['Handled 6 raise/clear alarm events across 3 fault conditions and published fault telemetry to Kafka.', 'Refactored and migrated 10+ service components from C++ to Go, implementing custom JSON serialization, bitmask-based policy evaluation, and TAI group lookup logic.', 'Assumed Scrum Master responsibilities after a team reorganization, leading daily stand-ups and sprint planning while removing blockers for teammates.'],
   },
   {
-    company: 'The CSL Group Inc.', initial: 'C', tone: 'mint', role: 'Software Developer Intern', dates: 'May 2024 – August 2024 and May 2025 – August 2025',
+    company: 'The CSL Group Inc.', logo: '/assets/companies/csl-group.png', tone: 'mint', role: 'Software Developer Intern', dates: 'May 2024 – August 2024 and May 2025 – August 2025',
     description: 'Built scalable Python and SQL ETL pipelines across Databricks, Snowflake, Azure, and SQL Server for maritime logistics operations.',
     highlight: 'Millions of shipment records migrated · 60 minutes saved per workflow run',
     details: ['Migrated millions of production shipment records for maritime logistics operations.', 'Migrated 10,000+ XREF records and 10+ Power BI datasets into Databricks.', 'Standardized data sources and reduced Azure DevOps workflow runtime by 60 minutes per run.'],
   },
   {
-    company: 'Ubisoft', initial: 'U', tone: 'peach', role: 'Frontend Developer Intern', dates: 'September 2023 – December 2023',
+    company: 'Ubisoft', logo: '/assets/companies/ubisoft.png', tone: 'peach', role: 'Frontend Developer Intern', dates: 'September 2023 – December 2023',
     description: 'Developed responsive HTML/CSS/JavaScript templates with AMPScript and Salesforce Marketing Cloud for batch, lifecycle, and real-time customer campaigns.',
     highlight: 'Reusable content components for international campaigns',
     details: ['Implemented reusable content components for localization, improving maintainability and consistency across international marketing campaigns.'],
   },
   {
-    company: 'Categen Ventures', initial: 'C', tone: 'blue', role: 'Software Developer Intern', dates: 'April 2022 – July 2022',
+    company: 'Categen Ventures', logo: '/assets/companies/categen.png', tone: 'blue', role: 'Software Developer Intern', dates: 'April 2022 – July 2022',
     description: 'Translated requirements into Figma mockups and built new mobile interfaces in Flutter for a point-of-sale app.',
     highlight: 'From Figma requirements to functional mobile interfaces',
     details: ['Built new features in Dart, quickly ramping up on the language and the macOS environment within the first week.'],

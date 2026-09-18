@@ -5,6 +5,8 @@ import './runtime/scene.css';
 import { setRendererStatus } from './runtime/explorer';
 import { initializeTheme } from './runtime/theme';
 import './runtime/theme.css';
+import './runtime/company-logos.css';
+import './runtime/scene-props.css';
 
 initializeTheme();
 const container = document.getElementById('root')!;

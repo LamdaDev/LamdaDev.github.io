@@ -312,6 +312,7 @@ html[data-theme='night'] {
 @media (min-width: 900px) and (max-width: 1099px) { .nav-shell { gap: 20px; }.main-nav { gap: 20px; }.nav-actions { gap: 12px; margin-left: 0; } }
 @media (min-width: 1100px) { .theme-button-label { display: inline; }.nav-actions { gap: 14px; } }
 .theme-button--compact .theme-button-label { display: none; }
+.brand, .nav-hello, h1, h2, h3 { color: var(--ink); }
 
 html[data-theme='night'] ::selection { color: var(--ink); background: #604878; }
 html[data-theme='night'] .site-header { background: #191923f7; border-color: #474251cc; }
@@ -436,7 +437,7 @@ html[data-theme-ready='true'] :where(body, a, button, p, h1, h2, h3, li, summary
 }
 /* Animate explicit text colors, while inherited text follows its parent directly.
    Re-transitioning inherited colors would otherwise trail behind by 800ms per level. */
-html[data-theme-ready='true'] :where(.main-nav a, .theme-button, .motion-button, #motion-toggle,
+html[data-theme-ready='true'] :where(.brand, .nav-hello, h1, h2, h3, .main-nav a, .theme-button, .motion-button, #motion-toggle,
   .brand-mark > span, .brand-dot, .purple-text, .pixel-star, .hero-hello, .hero-sticker,
   .hero-sticker .icon, .eyebrow, .name-dot, .hero-value, .hero-footnote, .hero-footnote > span,
   .scroll-cue, .section-label, .section-label > span, .section-intro,
@@ -448,7 +449,7 @@ html[data-theme-ready='true'] :where(.main-nav a, .theme-button, .motion-button,
   .tech-badges li, .project-link, .company-mark, .experience-date, .job-role, .job-role > span,
   .job-description, .job-highlight, .contact-copy > p:not(.section-label), .contact-email,
   .resume-link, .envelope-note > svg, .contact-art-label, .site-footer > p, .site-footer nav a,
-  .boba-picker legend, .boba-option, .boba-check, .scene-explorer, .scene-explorer-eyebrow,
+  .boba-picker legend, .boba-option, .boba-check, .scene-explorer-eyebrow,
   .scene-explorer-close, .scene-explorer-instructions, .scene-explorer-instructions span,
   .scene-explorer-status, .scene-explorer-controls button, .scene-explorer-motion,
   .scene-explorer-escape) {

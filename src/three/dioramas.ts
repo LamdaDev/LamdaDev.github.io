@@ -4,8 +4,14 @@ import { createProps } from './props';
 import type { BobaFlavor } from '../boba';
 
 export type SceneKind = 'hero' | 'about' | 'skills' | 'projects' | 'experience';
+export type ScenePropTarget = {
+  id: string;
+  objects: THREE.Object3D[];
+  anchor: THREE.Object3D;
+};
 export type Diorama = {
   root: THREE.Group;
+  propTargets: ScenePropTarget[];
   camera: { position: [number, number, number]; target: [number, number, number]; span: number };
   update: (action: CharacterAction, time: number) => void;
   setNightMix: (mix: number) => void;
@@ -26,9 +32,20 @@ export function createDiorama(kind: SceneKind): Diorama {
   let animate: (action: CharacterAction, time: number) => void = () => undefined;
   let setBobaFlavor: Diorama['setBobaFlavor'];
   const nightEffects: Array<(mix: number) => void> = [];
+  const propTargets: ScenePropTarget[] = [];
   const add = (...items: THREE.Object3D[]) => root.add(...items);
   const at = <T extends THREE.Object3D>(item: T, x: number, y: number, z: number) => { item.position.set(x, y, z); return item; };
   const ink = '#534c66';
+
+  // Targets are the actual prop meshes. Empty child anchors track their parent
+  // through the existing animation without adding visible or pickable geometry.
+  function target(id: string, objects: THREE.Object3D[], parent: THREE.Object3D, position: [number, number, number]) {
+    objects.forEach(object => { object.userData.sceneProp = id; });
+    const anchor = new THREE.Object3D();
+    anchor.name = `scene-prop-anchor-${id}`;
+    anchor.position.set(...position); parent.add(anchor);
+    propTargets.push({ id, objects, anchor });
+  }
 
   function base(color: string, width = 6.1, depth = 4.4) {
     add(p.box(width, .28, depth, color, [0, -.18, 0], .13));
@@ -145,6 +162,7 @@ export function createDiorama(kind: SceneKind): Diorama {
       halo.material.opacity = .18 * mix;
     });
     add(lamp);
+    return lamp;
   }
 
   if (kind === 'hero') {
@@ -157,7 +175,9 @@ export function createDiorama(kind: SceneKind): Diorama {
     greeting.add(at(p.text('hi, I\'m Daniel!', 1.5, .4, ink, undefined, 62), 0, 0, .09));
     greeting.add(p.box(.18, .18, .12, c.white, [-.44, -.32, 0], .025));
     greeting.position.set(-1.75, 3.65, .18); greeting.rotation.y = .1; add(greeting);
-    sparkle(1.53, 2.87, -.55, .23, '#f2c681');
+    target('hero-greeting', [greeting], greeting, [0, 0, .095]);
+    const goldStar = sparkle(1.53, 2.87, -.55, .23, '#f2c681');
+    target('hero-star', [goldStar], goldStar, [0, 0, .05]);
     sparkle(-1.82, 1.24, .23, .14, c.mint);
     sparkle(1.74, .86, .4, .16, c.lavender);
     const toy = new THREE.Group();
@@ -167,6 +187,7 @@ export function createDiorama(kind: SceneKind): Diorama {
     toy.add(p.ball(.04, c.peach, [.17, .045, .14]));
     toy.add(p.ball(.04, c.mint, [.26, -.025, .14]));
     toy.position.set(1.77, .4, 1.0); toy.rotation.set(-.15, -.35, .08); add(toy);
+    target('hero-gamepad', [toy], toy, [0, 0, .15]);
     const plant = p.plant(.72); plant.position.set(-1.82, .03, -.73); add(plant);
     // Framing includes every animated mesh with >=5% per-edge padding at 1.2.
     camera.position = [5.4, 4.2, 12]; camera.target = [0, 1.75, .05]; camera.span = 5.5;
@@ -187,17 +208,22 @@ export function createDiorama(kind: SceneKind): Diorama {
     add(p.box(2.66, .12, 1.18, c.cream, [-1.32, 1.14, -.12]));
     for (let i = 0; i < 9; i++) add(p.box(.055, .77, .025, '#f7d9c3', [-2.35 + i * .25, .57, .37], .01));
     add(at(p.text('a little cup of joy', 1.95, .27, '#87604e', undefined, 67), -1.32, .64, .396));
-    add(p.box(1.43, 1.0, .07, '#986c57', [-1.85, 1.91, -1.4]));
-    add(p.box(1.32, .9, .025, c.cream, [-1.85, 1.91, -1.35]));
-    add(at(p.text(['MILK TEA', 'MATCHA  /  TARO', 'extra pearls? yes.'], 1.21, .76, '#80604f', undefined, 55), -1.85, 1.91, -1.333));
+    const menuFrame = p.box(1.43, 1.0, .07, '#986c57', [-1.85, 1.91, -1.4]); add(menuFrame);
+    const menuPanel = p.box(1.32, .9, .025, c.cream, [-1.85, 1.91, -1.35]); add(menuPanel);
+    const menuText = at(p.text(['MILK TEA', 'MATCHA  /  TARO', 'extra pearls? yes.'], 1.21, .76, '#80604f', undefined, 55), -1.85, 1.91, -1.333); add(menuText);
+    target('about-menu', [menuFrame, menuPanel, menuText], menuPanel, [0, 0, .035]);
     const shelf = p.box(1.11, .08, .43, c.cream, [-.19, 1.8, -1.27]); add(shelf);
-    for (let i = 0; i < 3; i++) { const cup = p.drink('boba'); cup.name = `boba-shelf-${i}`; cup.scale.setScalar(.7); cup.position.set(-.51 + i * .31, 1.85, -1.26); add(cup); }
+    const shelfCups: THREE.Object3D[] = [];
+    for (let i = 0; i < 3; i++) { const cup = p.drink('boba'); cup.name = `boba-shelf-${i}`; cup.scale.setScalar(.7); cup.position.set(-.51 + i * .31, 1.85, -1.26); add(cup); shelfCups.push(cup); }
+    target('about-shelf', [shelf, ...shelfCups], shelf, [0, .3, .15]);
     const shopPlant = p.plant(.82); shopPlant.position.set(-2.51, 1.21, -.4); add(shopPlant);
     character.root.position.set(1.2, 0, .44); character.root.rotation.y = -.15;
     const rug = p.box(1.65, .025, 1.45, '#edc5af', [1.12, .008, .5], .012); add(rug);
     const customerShadow = p.shadow(.55, .45, .1); customerShadow.position.set(1.2, .027, .44); add(customerShadow);
     const inHand = p.drink('boba'); inHand.name = 'boba-in-hand'; inHand.position.set(0, -.12, 0); character.hands.right.add(inHand);
     const servedCup = p.drink('boba'); servedCup.name = 'boba-served'; add(servedCup);
+    target('about-drink', [inHand], inHand, [0, .17, .14]);
+    target('about-drink', [servedCup], servedCup, [0, .17, .14]);
     let flavor: BobaFlavor = 'milk-tea';
     setBobaFlavor = (nextFlavor) => {
       if (nextFlavor === flavor) return;
@@ -237,7 +263,18 @@ export function createDiorama(kind: SceneKind): Diorama {
     const keys = keyboard(); keys.position.set(.615, 1.27, .93); keys.rotation.y = -.35; add(keys);
     const mouse = p.ball(.115, c.white, [1.13, 1.29, .713], [.72, .45, 1]); add(mouse);
     const screen = monitor(gaming); screen.group.position.set(-1.13, 1.23, -.35); screen.group.rotation.y = .57; add(screen.group);
-    deskLamp();
+    const lamp = deskLamp();
+    // Soft lighting quads are decorative, so only the modeled monitor and lamp
+    // surfaces belong to their targets (the halos extend beyond those props).
+    const screenSurfaces = screen.group.children.filter(object => object.name !== 'night-monitor-halo');
+    const lampSurfaces = lamp.children.filter(object => object.name !== 'night-desk-halo');
+    if (gaming) {
+      target('skills-monitor', screenSurfaces, screen.group, [0, .95, .09]);
+      target('skills-keyboard', [keys], keys, [0, .08, .04]);
+    } else {
+      target('projects-monitor', screenSurfaces, screen.group, [0, .95, .09]);
+      target('projects-lamp', lampSurfaces, lamp, [-.08, 2.1, -.19]);
+    }
     // Cable routed under the desk, so all objects read as a connected setup.
     add(p.rod([-1.1, 1.19, -.41], [-1.15, .2, -.58], .017, ink));
     const tower = new THREE.Group();
@@ -249,6 +286,7 @@ export function createDiorama(kind: SceneKind): Diorama {
       const hub = p.ball(.06, ink, [0, y, .47], [1, 1, .2]); tower.add(hub);
     }
     tower.position.set(-2.22, .04, .0); add(tower);
+    if (gaming) target('skills-tower', [tower], tower, [0, .52, .49]);
     const chair = new THREE.Group();
     chair.add(p.box(.85, .17, .77, ink, [0, .64, 0], .07));
     chair.add(p.box(.81, 1.05, .18, gaming ? '#aaa1d0' : '#afa0c6', [0, 1.23, -.37], .075));
@@ -282,6 +320,8 @@ export function createDiorama(kind: SceneKind): Diorama {
       // A real modeled can moves between the desk and Daniel's hand.
       const deskCoke = p.drink('coke'); deskCoke.position.set(-.2, 1.23, 1.08); add(deskCoke);
       const handCoke = p.drink('coke'); handCoke.position.set(0, -.17, 0); character.hands.right.add(handCoke);
+      target('projects-drink', [deskCoke], deskCoke, [0, .16, .14]);
+      target('projects-drink', [handCoke], handCoke, [0, .16, .14]);
       const zzz = new THREE.Group();
       for (let i = 0; i < 3; i++) zzz.add(at(p.text(i === 0 ? 'Z' : 'z', .28 + i * .06, .36 + i * .06, c.purple, undefined, 700), i * .22, i * .29, 0));
       zzz.position.set(1.32, 2.85, 1.15); add(zzz);
@@ -323,10 +363,15 @@ export function createDiorama(kind: SceneKind): Diorama {
     add(p.rod([-1.04, .4, rackZ], [1.04, .4, rackZ], .05, '#8a9992'));
     const liftedBar = barbell(); add(liftedBar);
     const rackedBar = barbell(); rackedBar.position.set(0, 2.235, rackZ + .09); add(rackedBar);
+    target('experience-barbell', [liftedBar], liftedBar, [1.14, .1, .28]);
+    target('experience-barbell', [rackedBar], rackedBar, [1.14, .1, .28]);
     const towel = p.box(.44, .055, .65, c.cream, [1.86, .065, .45], .025); towel.rotation.y = -.2; add(towel);
-    add(p.box(.38, .025, .57, '#f0e4d8', [1.86, .103, .44], .011));
+    const towelFold = p.box(.38, .025, .57, '#f0e4d8', [1.86, .103, .44], .011); add(towelFold);
+    target('experience-towel', [towel, towelFold], towel, [0, .055, .03]);
     const standingWater = p.drink('water'); standingWater.position.set(1.91, .06, .98); add(standingWater);
     const handWater = p.drink('water'); handWater.position.set(0, -.14, 0); handWater.children[2].visible = false; character.hands.right.add(handWater);
+    target('experience-water', [standingWater], standingWater, [0, .2, .12]);
+    target('experience-water', [handWater], handWater, [0, .2, .12]);
     const dumbbell = new THREE.Group(); dumbbell.add(p.rod([-.3, 0, 0], [.3, 0, 0], .035, '#a9afae'));
     for (const x of [-.28, .28]) { const weight = p.cylinder(.15, .15, .13, c.purple, [x, 0, 0], 8); weight.rotation.z = Math.PI / 2; dumbbell.add(weight); }
     dumbbell.position.set(-1.9, .17, 1.1); dumbbell.rotation.y = -.3; add(dumbbell);
@@ -362,5 +407,5 @@ export function createDiorama(kind: SceneKind): Diorama {
     const clamped = THREE.MathUtils.clamp(mix, 0, 1);
     nightEffects.forEach(apply => apply(clamped));
   };
-  return { root, camera, update, setNightMix, setBobaFlavor, dispose() { p.dispose(); character.dispose(); } };
+  return { root, propTargets, camera, update, setNightMix, setBobaFlavor, dispose() { p.dispose(); character.dispose(); } };
 }

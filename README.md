@@ -38,6 +38,9 @@ The website uses React, TypeScript, Vite, Three.js, React Three Fiber, and selec
 | [`src/components/SceneExplorer.tsx`](src/components/SceneExplorer.tsx) | Explore buttons, modal viewer, focus management, and camera controls |
 | [`src/runtime/explorer.ts`](src/runtime/explorer.ts) | Viewer state shared by the page and renderer |
 | [`src/runtime/explorationCamera.ts`](src/runtime/explorationCamera.ts) | Orbit controls, zoom limits, and reset framing |
+| [`src/sceneDetails.ts`](src/sceneDetails.ts) | Labels and short personal notes for the 15 interactive props |
+| [`src/components/ScenePropDetails.tsx`](src/components/ScenePropDetails.tsx) | Prop buttons, gesture handling, notes, and keyboard dismissal |
+| [`src/three/propPicking.ts`](src/three/propPicking.ts) | Mesh picking and hints projected through the live scene camera |
 | [`src/components/MotionButton.tsx`](src/components/MotionButton.tsx) | Global animation control |
 | [`src/components/BobaPicker.tsx`](src/components/BobaPicker.tsx) | Keyboard-accessible milk tea, matcha, and taro buttons |
 | [`src/boba.ts`](src/boba.ts) | Flavor names, tea colors, and fallback image paths |
@@ -81,6 +84,20 @@ The expand button in each scene window, including the greeting, opens an enlarge
 The native modal dialog moves focus inside, keeps Tab navigation within its controls, and closes with **Escape** or the close button. Closing restores focus to the original expand button and restores the page's scroll position. The viewer's animation button shares the header's pause preference; device reduced-motion settings are respected while deliberate camera movement remains available.
 
 The existing canvas moves into the dialog's top layer and renders the same model with a separate orbit camera. No additional WebGL context or duplicate model is created. Background scene clocks stop while exploring; the selected animation and boba flavor continue. Closing restores the card's original camera. Unavailable WebGL displays an enlarged static preview with camera controls disabled. Without JavaScript, explore buttons are disabled and all portfolio content remains available.
+
+### Clickable little details
+
+Tap a prop in any scene, or choose its labeled button underneath, to open a short personal note. There are no icons over the artwork; a pointer cursor identifies clickable objects on hover. There are three details in each of the five scenes: the greeting sign, gamepad and gold star; boba menu, drink and sample shelf; gaming monitor, PC tower and keyboard; coding monitor, Coke Zero and desk lamp; barbell, water bottle and gym towel.
+
+The same interactions work inside **Explore this scene**. Dragging still rotates the camera, and scrolling the page or pinching the viewer does not open a note. Click targets follow moving props and the orbit camera. The labeled buttons remain available even when a prop is out of view or WebGL is unavailable. Use **Enter** or **Space** on a button to read a detail. **Escape** dismisses a note before closing the scene viewer; the note's close button returns focus to its prop button. Details are local to each scene view and do not use storage or tracking.
+
+Edit the copy in `src/sceneDetails.ts`. Each model's `propTargets` in `src/three/dioramas.ts` links those IDs to existing mesh objects and small, invisible position anchors. The picker uses the shared renderer and current camera; it adds no WebGL context, physics engine, or external service. Animations can be paused, reduced, or in night mode while the props remain usable. Without JavaScript, controls are disabled and the notes appear as readable text alongside the portfolio and scene previews.
+
+### Night shift and company marks
+
+The header and enlarged scene viewer include a **Night shift** toggle. It remembers the selected palette locally, fades page colors and scene lighting together, and adds warm task lighting and monitor glow to the gaming and coding desks. A saved choice applies before the app loads. Reduced motion switches immediately, and switching the theme does not restart animations or clear the chosen boba flavor.
+
+Employer marks are local PNGs in `public/assets/companies/`, displayed proportionally on consistent light badges in both themes. Original sources and asset processing are recorded in [company-logos.md](docs/company-logos.md).
 
 ### Choose Daniel’s boba
 

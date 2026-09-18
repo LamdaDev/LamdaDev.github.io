@@ -10,7 +10,6 @@ html[data-theme='night'] { --night-mix: 1; }
 html[data-theme-ready='true'] {
   transition:
     background-color var(--theme-duration, 800ms) var(--theme-easing, ease-in-out),
-    color var(--theme-duration, 800ms) var(--theme-easing, ease-in-out),
     --night-mix var(--theme-duration, 800ms) var(--theme-easing, ease-in-out);
 }
 @media (prefers-reduced-motion: reduce) {

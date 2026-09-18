@@ -5,6 +5,7 @@ import { closeExploration, controlExploration, openExploration, useExplorationSt
 import { toggleMotion, useMotion } from '../runtime/motion';
 import type { SceneKind } from '../runtime/sequence';
 import { ThemeButton } from './ThemeButton';
+import { ScenePropDetails } from './ScenePropDetails';
 
 const scenes: Record<SceneKind, { title: string; trigger: string; description: string }> = {
   hero: { title: 'Hello, world!', trigger: 'Explore the welcome scene', description: 'Daniel waves hello from his little lavender stage.' },
@@ -108,7 +109,7 @@ function SceneExplorer({ selection: { kind, trigger }, onDismiss }: { selection:
   }
 
   function moveCamera(event: KeyboardEvent<HTMLDivElement>) {
-    if (!ready || event.altKey || event.ctrlKey || event.metaKey) return;
+    if (!ready || event.target !== event.currentTarget || event.altKey || event.ctrlKey || event.metaKey) return;
     const commands = { ArrowLeft: 'left', ArrowRight: 'right', ArrowUp: 'up', ArrowDown: 'down', '+': 'zoom-in', '=': 'zoom-in', '-': 'zoom-out', '_': 'zoom-out', Home: 'reset' } as const;
     const command = commands[event.key as keyof typeof commands];
     if (command) { event.preventDefault(); controlExploration(command); }
@@ -129,6 +130,7 @@ function SceneExplorer({ selection: { kind, trigger }, onDismiss }: { selection:
         aria-describedby="scene-explorer-instructions" tabIndex={ready ? 0 : -1} data-interactive={ready} onKeyDown={moveCamera}>
         <img src={kind === 'about' ? bobaPreview(flavor) : `/previews/${kind}.png`} alt="" aria-hidden="true" className="scene-explorer-preview" width="780" height="600" />
       </div>
+      <ScenePropDetails kind={kind} surfaceRef={stageRef} />
       <div className="scene-explorer-tools">
         <p id="scene-explorer-instructions" className="scene-explorer-instructions">{ready ? <>Drag to rotate · Scroll or pinch to zoom<br /><span>Keyboard: focus the scene, then use arrows, + / −, or Home.</span></> : scene.description}</p>
         <p className="scene-explorer-status" role="status">{status === 'loading' ? 'Loading the 3D view…' : status === 'unavailable' ? '3D interaction is unavailable here. Enjoy the scene preview.' : ''}</p>

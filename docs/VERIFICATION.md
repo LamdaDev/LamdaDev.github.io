@@ -9,7 +9,11 @@ This record describes checks on the local portfolio implementation. It does not 
 | TypeScript | Type checking passed. |
 | Production build | Vite build and HTML prerender completed. |
 | Sequence unit tests | All five tests passed. |
-| Browser regression suite | All 23 tests passed in 36.1 seconds after adding scene exploration; no tests skipped. |
+| Browser regression suite | The 28 existing browser checks passed in the full run with clickable props. After the final overlay removal and test synchronization fixes, all six prop-specific checks passed in 15.9 seconds. No tests were skipped. |
+| Clickable scene props | Pointer picks select the corresponding real prop in all five paused scenes; all 15 named buttons work with Enter/Space, one note at a time, and restore focus on dismissal. The renderer retains one WebGL context. |
+| Prop gestures and fallback | Dragging rotates the explorer without opening notes; a 320px touch swipe scrolls without selecting, followed by a successful deliberate tap. Reduced motion, night mode, no-WebGL buttons, and readable no-JavaScript note content passed. |
+| Unobstructed props | Page and enlarged-view anchors have no text, child artwork, background, border, shadow, or pseudo-content. Real object clicks and generous touch targets still work without visible plus overlays. |
+| Night shift | Five browser tests passed: intermediate CSS/3D color interpolation, reversal, paused clocks, all five viewers, stored preference before hydration, 320px reduced-motion controls, and tinted fallback previews. Selected text/background pairs meet 4.5:1 contrast. |
 | Hero résumé link | After adding the top download link, build/type checking and five targeted content/responsive checks passed. Both links resolve to the intended PDF; the hero link stays on the opening screen at 1440, 768, 390, and 320px. |
 | Boba flavor controls | Three distinct WebGL renders at a fixed pose, no clock restart, selected state maintained across scrolling, keyboard selection at 320px, reduced motion, and all three fallback image choices passed. |
 | Enlarged scene viewers | All five open from the keyboard, retain the same canvas/context, contain focus, and restore trigger focus on Escape. Camera rotation changes an actual frozen render; keyboard, mouse drag, wheel zoom, and reset passed. |
@@ -25,7 +29,8 @@ This record describes checks on the local portfolio implementation. It does not 
 | Bench-press grip alignment | 151 sampled poses across five seconds; maximum measured perpendicular hand-to-bar-axis error was 0 model units. |
 | Resting bar | The lifting bar is hidden and the racked bar is visible at the expected rack height. |
 | Facial and greeting poses | Nap hides open eyes and shows closed eyes; the waving wrist changes independently while the head position remains stable. |
-| Static GLB export | 665,384-byte export; the `glTF` signature, version 2 header, and declared file length passed checks. |
+| Static GLB export | 665,784-byte export after adding invisible prop anchors; the `glTF` signature, version 2 header, and declared file length passed checks. |
+| Model night lighting | All five dioramas passed ten lighting samples, including interpolation, clamping and reset; geometry, ordinary colors, active poses and resource disposal remained correct. |
 | Static fallbacks | All five PNGs were regenerated from the actual Three.js scenes after final framing and gym layout corrections. |
 | Boba fallback variants | About previews were regenerated for milk tea, matcha, and taro; seven total scene preview assets are available. |
 | Content and local assets | 49 skills, two projects, four employers, both CSL date ranges, the résumé PDF, and the five scene PNGs passed browser checks. |
@@ -51,16 +56,18 @@ The final production build and prerender completed with these reported output si
 
 | Output | Uncompressed | Gzip |
 | --- | ---: | ---: |
-| Lazy Three.js scene chunk | 944.85 kB | 252.99 kB |
-| Core application JavaScript | 230.65 kB | 72.25 kB |
-| CSS | 37.34 kB | 8.86 kB |
-| Prerendered HTML | 34,226 bytes | Not measured |
+| Lazy Three.js scene chunk | 950.40 kB | 255.21 kB |
+| Core application JavaScript | 241.04 kB | 75.46 kB |
+| CSS | 56.76 kB | 12.21 kB |
+| Prerendered HTML | 44,770 bytes | Not measured |
 
 The scene chunk is substantial and loads separately from the portfolio content. The page uses one shared WebGL context, device pixel ratio 1 at viewport widths up to 600px, and a cap of 1.5 on larger viewports. These are build artifact sizes and rendering settings, not network timings, frame-rate results, or a Lighthouse score.
 
 ## Final verification status
 
-The scene exploration update passed production build/type checking, all five sequence tests, and all 23 browser tests. The enlarged boba shop was visually inspected on desktop and the gym viewer at 320px. The earlier model and boba material checks remain documented above; the viewer reuses those unchanged models. The browser coverage and qualifications are listed above. No publishing or deployment was performed.
+The clickable-prop update passed production build/type checking, all five sequence tests, and the character/boba/night model checks. The full browser run passed all 28 existing tests and three of the six new tests. Three new test failures were synchronization/assertion issues: reading the lazy renderer before readiness, tapping during a native scroll fling, and inspecting a `noscript` wrapper instead of its rendered children. After correcting those tests and removing the visible plus overlays, all six prop tests passed against the final build. The 28 unchanged tests were not repeated after that final cosmetic change and paused-layout invalidation fix.
+
+The final boba note was visually inspected at 1440px and the enlarged gym note in night mode at 320px. The props remain unobstructed and the mobile dialog controls fit. Escape was also checked with focus on the dialog's theme button: it dismisses the note first, then closes the viewer. No publishing or deployment was performed.
 
 ## Reproduce the checks
 

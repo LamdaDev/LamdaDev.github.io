@@ -1,0 +1,19 @@
+/* A consistent light tile protects each original logo's colors in both themes. */
+.experience-timeline .company-mark {
+  width: 56px;
+  height: 56px;
+  padding: 7px;
+  border-radius: 12px;
+}
+.company-mark .company-logo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: none;
+}
+html .experience-timeline .company-mark.tone-lavender { background: #f4effc; border-color: #d2c6e0; }
+html .experience-timeline .company-mark.tone-mint { background: #eff8f2; border-color: #c2daca; }
+html .experience-timeline .company-mark.tone-peach { background: #fff3e9; border-color: #e3cdbb; }
+html .experience-timeline .company-mark.tone-blue { background: #f0f5fc; border-color: #c7d3e5; }
+.experience-timeline .experience-entry:not(:last-child)::before { left: 27px; top: 64px; }

@@ -10,9 +10,11 @@ import { getExploration, setExplorationStatus, subscribeExploration, subscribeEx
 import { createExplorationCamera } from './explorationCamera';
 import { getNightMix, getTheme, subscribeTheme } from './theme';
 import { createLighting } from './lighting';
+import { createPropPicking } from '../three/propPicking';
+import { clearScenePropPickers, clearScenePropSurface } from './sceneProps';
 
 type Model = ReturnType<typeof createDiorama>;
-type View = { model: Model; scene: Scene; camera: OrthographicCamera; lighting: ReturnType<typeof createLighting> };
+type View = { model: Model; scene: Scene; camera: OrthographicCamera; lighting: ReturnType<typeof createLighting>; props: ReturnType<typeof createPropPicking> };
 declare global {
   interface Window {
     __portfolio: {
@@ -47,6 +49,7 @@ export function Compositor() {
     const unsubTheme = subscribeTheme(wake);
     const sceneObserver = new ResizeObserver(wake);
     const changeExploration = () => {
+      clearScenePropPickers();
       explorationCamera.current?.dispose();
       explorationCamera.current = null;
       sceneObserver.disconnect();
@@ -71,11 +74,13 @@ export function Compositor() {
       unsubMotion(); unsubRegistry(); unsubBoba(); unsubExploration(); unsubControls(); unsubTheme();
       sceneObserver.disconnect(); explorationCamera.current?.dispose(); explorationCamera.current = null;
       views.current.forEach(view => view.model.dispose()); views.current.clear();
+      clearScenePropPickers();
     };
   }, [invalidate]);
 
   useFrame(() => {
     if (gl.getContext().isContextLost()) {
+      clearScenePropPickers();
       entries.forEach(entry => entry.element.removeAttribute('data-rendered'));
       getExploration()?.element.removeAttribute('data-rendered');
       setExplorationStatus('unavailable');
@@ -110,7 +115,7 @@ export function Compositor() {
       entry.element.dataset.visible = String(entry.visible);
       entry.element.dataset.running = String(entry.visible && !paused && !entry.override);
       entry.elapsed = advanceElapsed(entry.elapsed, delta, entry.visible, paused || !!entry.override);
-      if (!entry.visible || motion.hidden) return;
+      if (!entry.visible || motion.hidden) { clearScenePropSurface(element); return; }
       if (entry.element.dataset.sceneError === 'true') {
         if (exploring) setExplorationStatus('unavailable');
         return;
@@ -131,7 +136,7 @@ export function Compositor() {
         const lighting = createLighting(scene);
         const camera = new OrthographicCamera(-4, 4, 3, -3, .1, 100);
         camera.position.fromArray(model.camera.position); camera.lookAt(...model.camera.target);
-        view = { model, scene, camera, lighting }; views.current.set(entry.kind, view);
+        view = { model, scene, camera, lighting, props: createPropPicking(model) }; views.current.set(entry.kind, view);
       }
       view.lighting.update(nightMix);
       view.model.setNightMix(nightMix);
@@ -161,6 +166,7 @@ export function Compositor() {
       gl.setViewport(rect.left, size.height - rect.bottom, rect.width, rect.height);
       gl.setScissor(left, size.height - bottom, right - left, bottom - top);
       gl.render(view.scene, camera);
+      view.props.update(element, camera, rect.width, rect.height);
       triangles += gl.info.render.triangles; calls += gl.info.render.calls;
       element.dataset.rendered = 'true';
       if (exploring) setExplorationStatus('ready');
