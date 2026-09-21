@@ -7,6 +7,7 @@ import { initializeTheme } from './runtime/theme';
 import './runtime/theme.css';
 import './runtime/company-logos.css';
 import './runtime/scene-props.css';
+import './runtime/mobile.css';
 
 initializeTheme();
 const container = document.getElementById('root')!;

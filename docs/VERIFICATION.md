@@ -9,7 +9,11 @@ This record describes checks on the local portfolio implementation. It does not 
 | TypeScript | Type checking passed. |
 | Production build | Vite build and HTML prerender completed. |
 | Sequence unit tests | All five tests passed. |
-| Browser regression suite | The 28 existing browser checks passed in the full run with clickable props. After the final overlay removal and test synchronization fixes, all six prop-specific checks passed in 15.9 seconds. No tests were skipped. |
+| Browser regression suite | All 37 tests passed in 1.9 minutes after the mobile layout fixes. No tests were skipped. |
+| Mobile layout audit | Phone widths 320, 375, 390 and 430px, tablet width 768px, and landscape sizes 667×375 and 844×390 were inspected. Expanded content has no horizontal overflow; the introduction, primary links and résumé fit the first screen on short 568px-high phones. |
+| Mobile touch targets | Navigation, motion control, résumé, project/contact/social links, and disclosure summaries have at least 44px-high tap areas. Narrow navigation labels remain separated. |
+| Short mobile viewers | All five viewers at four short portrait/landscape sizes keep Close visible and tappable after expanding notes and scrolling to the bottom. Real coordinate clicks confirm no overlapping layer blocks it; focus returns to the launch button. |
+| Touch and orientation | Touch drag rotates a scene without opening a prop or scrolling the panel; a swipe outside the 3D surface scrolls the viewer without rotating. Changing from landscape to portrait preserves the camera and fits the new viewport. |
 | Clickable scene props | Pointer picks select the corresponding real prop in all five paused scenes; all 15 named buttons work with Enter/Space, one note at a time, and restore focus on dismissal. The renderer retains one WebGL context. |
 | Prop gestures and fallback | Dragging rotates the explorer without opening notes; a 320px touch swipe scrolls without selecting, followed by a successful deliberate tap. Reduced motion, night mode, no-WebGL buttons, and readable no-JavaScript note content passed. |
 | Unobstructed props | Page and enlarged-view anchors have no text, child artwork, background, border, shadow, or pseudo-content. Real object clicks and generous touch targets still work without visible plus overlays. |
@@ -58,16 +62,18 @@ The final production build and prerender completed with these reported output si
 | --- | ---: | ---: |
 | Lazy Three.js scene chunk | 950.40 kB | 255.21 kB |
 | Core application JavaScript | 241.04 kB | 75.46 kB |
-| CSS | 56.76 kB | 12.21 kB |
+| CSS | 58.05 kB | 12.45 kB |
 | Prerendered HTML | 44,770 bytes | Not measured |
 
 The scene chunk is substantial and loads separately from the portfolio content. The page uses one shared WebGL context, device pixel ratio 1 at viewport widths up to 600px, and a cap of 1.5 on larger viewports. These are build artifact sizes and rendering settings, not network timings, frame-rate results, or a Lighthouse score.
 
 ## Final verification status
 
-The clickable-prop update passed production build/type checking, all five sequence tests, and the character/boba/night model checks. The full browser run passed all 28 existing tests and three of the six new tests. Three new test failures were synchronization/assertion issues: reading the lazy renderer before readiness, tapping during a native scroll fling, and inspecting a `noscript` wrapper instead of its rendered children. After correcting those tests and removing the visible plus overlays, all six prop tests passed against the final build. The 28 unchanged tests were not repeated after that final cosmetic change and paused-layout invalidation fix.
+The mobile update passed production build/type checking and all 37 browser tests, including three new mobile regression cases. The previous five sequence tests and model checks remain applicable; no animation or model code changed in this update.
 
-The final boba note was visually inspected at 1440px and the enlarged gym note in night mode at 320px. The props remain unobstructed and the mobile dialog controls fit. Escape was also checked with focus on the dialog's theme button: it dismisses the note first, then closes the viewer. No publishing or deployment was performed.
+Manual Chromium mobile emulation used the loaded Google Fonts and touch input. Page sections, expanded details, night mode, and short landscape viewers were inspected. Improvements address previously undersized links, primary hero links below the first screen on short phones, and the viewer's Close button scrolling out of view. The introduction now precedes the illustration in the document as well as the mobile layout, preserving a sensible keyboard order. Desktop remains side by side. Tests also confirm that clickable props remain free of visible plus overlays.
+
+These checks use browser emulation, not a physical iPhone or Android phone, and do not establish Safari compatibility or mobile GPU/battery performance. No publishing or deployment was performed.
 
 ## Reproduce the checks
 

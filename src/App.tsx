@@ -78,7 +78,6 @@ export default function App() {
     <header className="site-header"><div className="nav-shell"><Brand /><nav className="main-nav" aria-label="Main navigation"><a href="#about">About</a><a href="#skills">Skills</a><a href="#projects">Projects</a><a href="#experience">Experience</a><a href="#contact">Contact</a></nav><div className="nav-actions"><ThemeButton /><MotionButton /><a className="nav-hello" href={`mailto:${links.email}`}>Say hello<Icon name="external" /></a></div></div></header>
     <main id="main">
       <section className="hero shell" id="top" aria-labelledby="hero-title">
-        <div className="hero-art"><span className="hero-hello pixel-label"><span aria-hidden="true">✦</span> HELLO, WORLD!</span><div className="hero-orbit" aria-hidden="true" /><SceneSlot kind="hero" /><ExploreSceneButton kind="hero" className="hero-explore" /><span className="hero-sticker"><Icon name="heart" />Code, curiosity & boba.</span><PixelStar className="hero-star-one" /><PixelStar className="hero-star-two" /></div>
         <div className="hero-copy">
           <p className="eyebrow"><span className="eyebrow-line" />SOFTWARE DEVELOPER & CURIOUS HUMAN</p>
           <h1 id="hero-title"><span>Daniel</span><span>Lam<span className="name-dot">.</span><PixelStar className="name-star" /></span></h1>
@@ -87,6 +86,7 @@ export default function App() {
           <a className="resume-link hero-resume" href={links.resume} download="Daniel_Lam_CV_SWE.pdf"><Icon name="download" />Download résumé<span>PDF</span></a>
           <p className="hero-footnote"><span aria-hidden="true">⌁</span> Software Engineering Co-op student<br className="mobile-break" /> at Concordia University</p>
         </div>
+        <div className="hero-art"><span className="hero-hello pixel-label"><span aria-hidden="true">✦</span> HELLO, WORLD!</span><div className="hero-orbit" aria-hidden="true" /><SceneSlot kind="hero" /><ExploreSceneButton kind="hero" className="hero-explore" /><span className="hero-sticker"><Icon name="heart" />Code, curiosity & boba.</span><PixelStar className="hero-star-one" /><PixelStar className="hero-star-two" /></div>
         <a href="#about" className="scroll-cue"><span className="scroll-mouse" aria-hidden="true" />A little more about me<span aria-hidden="true">↓</span></a>
       </section>
       <div className="chapter-divider shell" aria-hidden="true"><span /><PixelStar /><span /></div>

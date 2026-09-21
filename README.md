@@ -34,6 +34,7 @@ The website uses React, TypeScript, Vite, Three.js, React Three Fiber, and selec
 | [`src/content.ts`](src/content.ts) | Skills, projects, experience, coursework, contact links, and résumé URL |
 | [`src/App.tsx`](src/App.tsx) | Page sections, copy, navigation, project cards, and project concept previews |
 | [`src/styles.css`](src/styles.css) | Page layout, responsive rules, typography, colors, and spacing |
+| [`src/runtime/mobile.css`](src/runtime/mobile.css) | Mobile tap targets, introduction-first layout, and the viewer's sticky header |
 | [`src/components/SceneSlot.tsx`](src/components/SceneSlot.tsx) | Accessible scene descriptions and static preview images |
 | [`src/components/SceneExplorer.tsx`](src/components/SceneExplorer.tsx) | Explore buttons, modal viewer, focus management, and camera controls |
 | [`src/runtime/explorer.ts`](src/runtime/explorer.ts) | Viewer state shared by the page and renderer |
@@ -84,6 +85,12 @@ The expand button in each scene window, including the greeting, opens an enlarge
 The native modal dialog moves focus inside, keeps Tab navigation within its controls, and closes with **Escape** or the close button. Closing restores focus to the original expand button and restores the page's scroll position. The viewer's animation button shares the header's pause preference; device reduced-motion settings are respected while deliberate camera movement remains available.
 
 The existing canvas moves into the dialog's top layer and renders the same model with a separate orbit camera. No additional WebGL context or duplicate model is created. Background scene clocks stop while exploring; the selected animation and boba flavor continue. Closing restores the card's original camera. Unavailable WebGL displays an enlarged static preview with camera controls disabled. Without JavaScript, explore buttons are disabled and all portfolio content remains available.
+
+### Mobile layout
+
+On phones and tablets, the introduction, project/contact buttons, and résumé precede the greeting illustration in both document and visual order. Desktop keeps the side-by-side layout. Navigation, motion control, résumé links, disclosures, project links, and contact/social links have at least 44px-high tap areas on mobile.
+
+Enlarged scenes scroll when the viewport is short, while their title, theme toggle, and Close button stay visible. Drag inside the 3D area to rotate; swipe on the note or controls area to scroll the viewer. The page header scrolls normally in short landscape layouts to leave more room for the content. Mobile regression coverage lives in `tests/mobile.spec.ts`.
 
 ### Clickable little details
 
