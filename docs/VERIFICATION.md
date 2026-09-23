@@ -8,8 +8,8 @@ This record describes checks on the local portfolio implementation. It does not 
 | --- | --- |
 | TypeScript | Type checking passed. |
 | Production build | Vite build and HTML prerender completed. |
-| Sequence unit tests | All five tests passed. |
-| Browser regression suite | All 37 tests passed in 1.9 minutes after the mobile layout fixes. No tests were skipped. |
+| Sequence unit tests | All six tests passed, including the six-second greeting cycle and its reduced-motion pose. |
+| Browser regression suite | All 37 tests passed in 1.8 minutes after the initial greeting update. After the front-to-up lift and delayed wave update, three focused checks for pause persistence, reduced motion and scene-viewer controls passed. |
 | Mobile layout audit | Phone widths 320, 375, 390 and 430px, tablet width 768px, and landscape sizes 667×375 and 844×390 were inspected. Expanded content has no horizontal overflow; the introduction, primary links and résumé fit the first screen on short 568px-high phones. |
 | Mobile touch targets | Navigation, motion control, résumé, project/contact/social links, and disclosure summaries have at least 44px-high tap areas. Narrow navigation labels remain separated. |
 | Short mobile viewers | All five viewers at four short portrait/landscape sizes keep Close visible and tappable after expanding notes and scrolling to the bottom. Real coordinate clicks confirm no overlapping layer blocks it; focus returns to the launch button. |
@@ -32,11 +32,13 @@ This record describes checks on the local portfolio implementation. It does not 
 | Character pose geometry | All nine activity poses produced finite bounds; targeted character TypeScript checking passed. |
 | Bench-press grip alignment | 151 sampled poses across five seconds; maximum measured perpendicular hand-to-bar-axis error was 0 model units. |
 | Resting bar | The lifting bar is hidden and the racked bar is visible at the expected rack height. |
-| Facial and greeting poses | Nap hides open eyes and shows closed eyes; the waving wrist changes independently while the head position remains stable. |
-| Static GLB export | 665,784-byte export after adding invisible prop anchors; the `glTF` signature, version 2 header, and declared file length passed checks. |
+| Facial and greeting poses | Nap hides open eyes and shows closed eyes. Across 733 greeting samples at 120 Hz, feet stay planted and the six-second loop closes without a position jump. Both arms remain straight, with connected joints, a 0.72-unit reach and 0.36-unit segments: 25% shorter than their previous 0.96-unit total length. |
+| Greeting direction and timing | Mid-lift forward movement is 0.708 units versus 0.100 sideways. The raised wrist stays at least 0.572 units above its shoulder, with fingers within 23 degrees of screen-up and the hand beside the face. It settles from 1.45 to 1.65 seconds with no wrist movement, then waves. The approved idle pose and resting arm are retained. |
+| Static GLB export | The updated greeting exports successfully; the `glTF` signature, version 2 header, and declared file length passed checks. |
 | Model night lighting | All five dioramas passed ten lighting samples, including interpolation, clamping and reset; geometry, ordinary colors, active poses and resource disposal remained correct. |
 | Static fallbacks | All five PNGs were regenerated from the actual Three.js scenes after final framing and gym layout corrections. |
 | Boba fallback variants | About previews were regenerated for milk tea, matcha, and taro; seven total scene preview assets are available. |
+| Greeting fallback | Hero preview regenerated from the raised-hand pose at 1.9 seconds, with HTML controls and decorations excluded from the image. |
 | Content and local assets | 49 skills, two projects, four employers, both CSL date ranges, the résumé PDF, and the five scene PNGs passed browser checks. |
 | Opening layouts | The avatar and primary CTA are visible in the checked desktop, tablet, phone, and narrow layouts; no horizontal overflow was detected. |
 | Keyboard behavior | Skip link, visible focus, and expandable details passed the browser checks. |
@@ -48,7 +50,7 @@ This record describes checks on the local portfolio implementation. It does not 
 | WebGL failure handling | Disabled WebGL, an injected scene-factory failure, and an actual WebGL context-loss event retained or restored static previews. |
 | Visual regression comparison | No prior visual baseline exists; a comparison is inconclusive. Current page and scene screenshots were inspected. |
 
-The sequence tests cover coding transitions at 6/8/11 seconds, the once-only boba introduction, gym transitions at 5/9 seconds, paused and offscreen clocks, delayed-frame clamping, and stable reduced-motion selections.
+The sequence tests cover the six-second greeting, coding transitions at 6/8/11 seconds, the once-only boba introduction, gym transitions at 5/9 seconds, paused and offscreen clocks, delayed-frame clamping, and stable reduced-motion selections.
 
 Visual inspection prompted adjustments to keyboard and mouse placement, hand heights, distinct drink heights, the closed-eye nap pose, bent bench-press legs, foot placement, and scene props. These are stylized illustrations rather than a biomechanical simulation or a photogrammetric reconstruction of the supplied portrait.
 
@@ -60,7 +62,7 @@ The final production build and prerender completed with these reported output si
 
 | Output | Uncompressed | Gzip |
 | --- | ---: | ---: |
-| Lazy Three.js scene chunk | 950.40 kB | 255.21 kB |
+| Lazy Three.js scene chunk | 951.80 kB | 255.69 kB |
 | Core application JavaScript | 241.04 kB | 75.46 kB |
 | CSS | 58.05 kB | 12.45 kB |
 | Prerendered HTML | 44,770 bytes | Not measured |
@@ -69,7 +71,7 @@ The scene chunk is substantial and loads separately from the portfolio content. 
 
 ## Final verification status
 
-The mobile update passed production build/type checking and all 37 browser tests, including three new mobile regression cases. The previous five sequence tests and model checks remain applicable; no animation or model code changed in this update.
+The initial greeting update passed production build/type checking, six sequence tests, all 37 browser tests, and the character and night-lighting model checks. The front-to-up lift passed three focused browser checks. The subsequent higher, upright wave passed a fresh production build and character model checks across 733 frames. Raised poses and both wave extremes were visually inspected; the static hero preview was regenerated to match.
 
 Manual Chromium mobile emulation used the loaded Google Fonts and touch input. Page sections, expanded details, night mode, and short landscape viewers were inspected. Improvements address previously undersized links, primary hero links below the first screen on short phones, and the viewer's Close button scrolling out of view. The introduction now precedes the illustration in the document as well as the mobile layout, preserving a sensible keyboard order. Desktop remains side by side. Tests also confirm that clickable props remain free of visible plus overlays.
 

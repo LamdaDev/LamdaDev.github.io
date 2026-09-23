@@ -20,4 +20,13 @@ test('offscreen and paused clocks stay unchanged; delayed frames cannot skip an 
 test('reduced motion has stable representative poses', () => {
   assert.deepEqual(activityAt('experience', 500, true), activityAt('experience', 0, true));
   assert.equal(activityAt('about', 0, true).action, 'sip');
+  assert.deepEqual(activityAt('hero', 500, true), { action: 'wave', time: 1.9 });
+});
+
+test('the greeting has time to raise, wave, and rest before its six-second repeat', () => {
+  for (const t of [0, .25, 1.9, 3.8, 4.9, 5.999]) {
+    assert.deepEqual(activityAt('hero', t), { action: 'wave', time: t });
+  }
+  assert.deepEqual(activityAt('hero', 6), { action: 'wave', time: 0 });
+  assert.deepEqual(activityAt('hero', 7.5), { action: 'wave', time: 1.5 });
 });

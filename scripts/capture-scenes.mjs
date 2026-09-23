@@ -9,8 +9,10 @@ try {
   const page = await browser.newPage({ viewport: { width: 1440, height: 1000 }, deviceScaleFactor: 1.5 });
   await page.goto(process.env.PREVIEW_URL || 'http://127.0.0.1:5173', { waitUntil: 'networkidle' });
   await page.waitForFunction(() => !!window.__portfolio, undefined, { timeout: 30000 });
-  await page.addStyleTag({ content: '.scene-slot { aspect-ratio: 1.3 !important; } html { scroll-behavior: auto !important; }' });
-  for (const [kind, action, time] of [['hero', 'wave', .8], ['about', 'sip', 1.4], ['skills', 'game', 1], ['projects', 'code', 1], ['experience', 'rest', 1]]) {
+  // Keep page controls and decorations out of the reusable scene artwork.
+  await page.addStyleTag({ content: '.scene-slot { aspect-ratio: 1.3 !important; } .hero-art > :not(.scene-slot) { visibility: hidden !important; } html { scroll-behavior: auto !important; }' });
+  for (const [kind, action, time] of [['hero', 'wave', 1.9], ['about', 'sip', 1.4], ['skills', 'game', 1], ['projects', 'code', 1], ['experience', 'rest', 1]]) {
+    if (process.argv.includes('--hero') && kind !== 'hero') continue;
     if (process.argv.includes('--boba') && kind !== 'about') continue;
     const slot = page.locator(`[data-scene-kind="${kind}"]`);
     await slot.scrollIntoViewIfNeeded();

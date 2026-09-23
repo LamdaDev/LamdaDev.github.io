@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { GREETING_DURATION } from '../runtime/sequence';
 
 export type CharacterAction = 'wave' | 'order' | 'sip' | 'game' | 'code' | 'drink' | 'nap' | 'bench' | 'rest';
 export interface ChibiCharacter {
@@ -11,6 +12,7 @@ export interface ChibiCharacter {
 
 type Point = [number, number, number];
 const TAU = Math.PI * 2;
+const GREETING_ARM_LENGTH = .72;
 const Y_AXIS = new THREE.Vector3(0, 1, 0);
 
 /**
@@ -56,10 +58,10 @@ export function createCharacter(): ChibiCharacter {
     const mesh = new THREE.Mesh(geometry(new THREE.TubeGeometry(curve, Math.max(16, points.length * 5), width, 6, closed)), mat);
     mesh.name = name; mesh.castShadow = true; parent.add(mesh); return mesh;
   }
-  function segment(name: string, radius: number, mat: THREE.Material): THREE.Mesh {
+  function segment(name: string, radius: number, mat: THREE.Material, parent: THREE.Object3D = root): THREE.Mesh {
     const mesh = new THREE.Mesh(cylinder, mat);
     mesh.name = name; mesh.scale.set(radius, 1, radius);
-    mesh.castShadow = true; mesh.receiveShadow = true; root.add(mesh); return mesh;
+    mesh.castShadow = true; mesh.receiveShadow = true; parent.add(mesh); return mesh;
   }
 
   // T-shirt is a smooth lathed silhouette, flattened front-to-back.
@@ -177,8 +179,8 @@ export function createCharacter(): ChibiCharacter {
     mesh.scale.y = Math.max(.001, length);
     mesh.quaternion.setFromUnitVectors(Y_AXIS, direction.normalize());
   }
-  function makeHand(side: number) {
-    const group = new THREE.Group(); group.name = `${side < 0 ? 'Left' : 'Right'} wrist attachment`; root.add(group);
+  function makeHand(side: number, parent: THREE.Object3D) {
+    const group = new THREE.Group(); group.name = `${side < 0 ? 'Left' : 'Right'} wrist attachment`; parent.add(group);
     ellipsoid(group, 'Palm', [0, 0, 0], [.103, .115, .061], skin);
     const fingers: THREE.Group[] = [];
     for (let i = 0; i < 4; i++) {
@@ -190,30 +192,64 @@ export function createCharacter(): ChibiCharacter {
     return { group, fingers };
   }
   function makeArm(side: number) {
-    const shoulder = new THREE.Vector3(side * .435, 1.62, 0);
-    const upper = segment('Upper arm', .106, skin);
-    const sleeve = segment('Black T-shirt sleeve', .166, tee);
-    const forearm = segment('Forearm', .095, skin);
-    const elbowMesh = ellipsoid(root, 'Rounded elbow', [0, 0, 0], [.106, .106, .106], skin);
-    const hand = makeHand(side);
+    const shoulder = new THREE.Group();
+    shoulder.name = `${side < 0 ? 'Left' : 'Right'} shoulder pivot`;
+    shoulder.position.set(side * .435, 1.62, 0); root.add(shoulder);
+    const origin = new THREE.Vector3();
+    const upper = segment('Upper arm', .106, skin, shoulder);
+    const sleeve = segment('Black T-shirt sleeve', .166, tee, shoulder);
+    const forearm = segment('Forearm', .095, skin, shoulder);
+    const elbowMesh = ellipsoid(shoulder, 'Rounded elbow', [0, 0, 0], [.106, .106, .106], skin);
+    const hand = makeHand(side, shoulder);
     const target = new THREE.Vector3();
-    function set(x: number, y: number, z: number, fingers: number, waveAngle = 0) {
-      target.set(x, y, z); hand.group.position.copy(target); hand.group.rotation.set(0, 0, waveAngle);
+    const sleeveStart = new THREE.Vector3();
+    const handCompensation = new THREE.Quaternion();
+    function poseArm(fingers: number, handRoll: number, coverShoulder = false) {
+      hand.group.position.copy(target); hand.group.rotation.set(0, 0, handRoll);
       for (const finger of hand.fingers) finger.rotation.x = fingers;
-      // Two-segment planar IK, with the elbow biased outside the torso.
-      direction.subVectors(target, shoulder);
+      elbowMesh.position.copy(elbow);
+      connect(upper, origin, elbow); connect(forearm, elbow, target);
+      // Separate the sleeve and skin caps to prevent shoulder flickering.
+      sleeveStart.copy(elbow).normalize().multiplyScalar(coverShoulder ? -.018 : 0);
+      upperEnd.copy(elbow).multiplyScalar(.62); connect(sleeve, sleeveStart, upperEnd);
+    }
+    function set(x: number, y: number, z: number, fingers: number, handRoll = 0) {
+      shoulder.rotation.set(0, 0, 0);
+      target.set(x - shoulder.position.x, y - shoulder.position.y, z);
+      direction.copy(target);
       const distance = Math.max(.001, direction.length()); direction.divideScalar(distance);
       const armLength = .48;
       const height = Math.sqrt(Math.max(.002, armLength * armLength - distance * distance * .25));
-      bend.set(side, -.36, -.28).addScaledVector(direction, -bend.dot(direction)).normalize();
-      elbow.copy(shoulder).addScaledVector(direction, distance * .5).addScaledVector(bend, height);
-      elbowMesh.position.copy(elbow);
-      connect(upper, shoulder, elbow); connect(forearm, elbow, target);
-      upperEnd.copy(shoulder).lerp(elbow, .62); connect(sleeve, shoulder, upperEnd);
+      bend.set(side, -.36, -.28)
+        .addScaledVector(direction, -bend.dot(direction)).normalize();
+      elbow.copy(target).multiplyScalar(.5).addScaledVector(bend, height);
+      poseArm(fingers, handRoll);
     }
-    return { set, hand: hand.group };
+    function greetDirection(sideways: number, vertical: number, forward: number, fingers: number, handRoll: number) {
+      shoulder.rotation.set(0, Math.PI, 0);
+      // A fixed-length straight arm swings as one piece from the shoulder.
+      // Negative local Z becomes forward after the shoulder's half-turn.
+      target.set(-side * sideways, vertical, -forward)
+        .normalize().multiplyScalar(GREETING_ARM_LENGTH);
+      elbow.copy(target).multiplyScalar(.5);
+      poseArm(fingers, handRoll, true);
+    }
+    function greet(angle: number, forward: number, fingers: number, handRoll: number) {
+      greetDirection(Math.sin(angle), -Math.cos(angle), forward, fingers, handRoll);
+    }
+    function preserveHandFacing() {
+      // Keep the approved palm orientation after turning the parent shoulder.
+      handCompensation.copy(shoulder.quaternion).invert();
+      hand.group.quaternion.premultiply(handCompensation);
+    }
+    return { set, greet, greetDirection, preserveHandFacing, hand: hand.group };
   }
   const left = makeArm(-1), right = makeArm(1);
+  // Move the torso, neck and arms together, leaving the legs and feet planted.
+  const upperBody = new THREE.Group();
+  upperBody.name = 'Upper body greeting sway';
+  upperBody.add(...root.children.slice());
+  root.add(upperBody);
   function makeLeg(side: number) {
     const hip = new THREE.Vector3(side * .215, 1.0, 0);
     const knee = new THREE.Vector3(), ankle = new THREE.Vector3();
@@ -244,6 +280,7 @@ export function createCharacter(): ChibiCharacter {
     const t = Math.max(0, time);
     const seated = ['game', 'code', 'drink', 'nap', 'rest'].includes(action);
     leftLeg.set(seated, action === 'bench'); rightLeg.set(seated, action === 'bench');
+    upperBody.position.set(0, 0, 0); upperBody.rotation.set(0, 0, 0);
     head.position.set(0, 2.48, 0); head.rotation.set(0, 0, 0);
     const blinking = (t + .6) % 4.4 > 4.23;
     openEyes.visible = action !== 'nap' && !blinking;
@@ -254,9 +291,47 @@ export function createCharacter(): ChibiCharacter {
     left.set(-.61, .99, .08, .75); right.set(.61, .99, .08, .75);
 
     if (action === 'wave') {
-      const phase = t % 4;
-      const wave = phase < 2.5 ? Math.sin(phase * TAU * 1.6) : 0;
-      right.set(1.02 + wave * .10, 2.18 + Math.cos(phase * TAU * 1.6) * (phase < 2.5 ? .035 : 0), .17, 0, -.10 + wave * .26);
+      const phase = t % GREETING_DURATION;
+      // Quintic easing keeps both speed and acceleration soft at each hand-off.
+      const ease = (start: number, end: number) => THREE.MathUtils.smootherstep(phase, start, end);
+      const lift = ease(.25, 1.45) * (1 - ease(3.8, 4.9));
+      // Reach the raised pose, settle, and only then begin the wrist waves.
+      const waving = ease(1.65, 1.95) * (1 - ease(3.2, 3.6));
+      const beat = (phase - 1.65) * TAU / .9;
+      const wave = -Math.sin(beat) * waving;
+      const follow = -Math.sin(beat - .42) * waving;
+      const breath = Math.sin(phase / GREETING_DURATION * TAU);
+      const nod = ease(.6, 1.25) * (1 - ease(1.55, 2.3));
+
+      // Short, straight arms stay beside the torso; fingers point down at rest.
+      left.greet(.14 + breath * .012, .055, .36, Math.PI + .06);
+      left.hand.rotation.y = -.16;
+      // Pitch through the front (YZ plane), rather than lifting out to the side.
+      // Keep the idle vector and front-first lift, then reach higher beside the head.
+      const restPitch = Math.atan2(.055, Math.cos(.14));
+      const planeRadius = Math.hypot(Math.cos(.14), .055);
+      const pitch = restPitch + (2.85 - restPitch) * lift + .018 * follow;
+      // Add clearance late in the lift so the upright hand stays outside the face.
+      const headClearance = THREE.MathUtils.smootherstep(lift, .55, 1);
+      right.greetDirection(Math.sin(.14) * (1 - headClearance) + .66 * headClearance + .018 * follow,
+        -Math.cos(pitch) * planeRadius, Math.sin(pitch) * planeRadius,
+        .36 * (1 - lift) + .055 * lift,
+        -Math.PI - .16 * lift - .23 * wave);
+      right.hand.rotation.y = .14 * (1 - lift) + .075 * follow;
+      // Point the open hand toward the sky once the arm reaches its raised pose.
+      right.hand.rotation.x = -(Math.PI - .1) * lift + .04 * follow;
+      // Roll around each hand's own finger axis, preserving the wave direction.
+      left.hand.rotateY(Math.PI);
+      right.hand.rotateY(Math.PI);
+      left.preserveHandFacing();
+      right.preserveHandFacing();
+
+      upperBody.rotation.z = -.012 * lift + .006 * breath;
+      upperBody.rotation.y = .016 * lift;
+      upperBody.position.y = .004 * breath;
+      head.rotation.x = .045 * nod;
+      head.rotation.y = -.035 * lift;
+      head.rotation.z = .025 * lift + .006 * breath;
     } else if (action === 'order') {
       const reach = Math.min(1, t / 1.3);
       right.set(.45 - reach * .16, 1.34, .45 + reach * .28, .5);

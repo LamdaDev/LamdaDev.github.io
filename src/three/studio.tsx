@@ -4,7 +4,7 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import { createDiorama } from './dioramas';
 import type { CharacterAction } from './character';
-import { sceneKinds, type SceneKind } from '../runtime/sequence';
+import { GREETING_PREVIEW_TIME, sceneKinds, type SceneKind } from '../runtime/sequence';
 
 const actions: Record<SceneKind, CharacterAction[]> = { hero: ['wave'], about: ['order','sip'], skills: ['game'], projects: ['code','drink','nap'], experience: ['bench','rest'] };
 function Model({ kind, action, time, play }: { kind: SceneKind; action: CharacterAction; time: number; play: boolean }) {
@@ -32,8 +32,8 @@ function Model({ kind, action, time, play }: { kind: SceneKind; action: Characte
 function Studio() {
   const [kind, setKind] = useState<SceneKind>('hero');
   const [action, setAction] = useState<CharacterAction>('wave');
-  const [time, setTime] = useState(.8);
+  const [time, setTime] = useState(GREETING_PREVIEW_TIME);
   const [play, setPlay] = useState(false);
-  return <><header><h1>Daniel · scene studio</h1><select aria-label="Scene" value={kind} onChange={event => { const k = event.target.value as SceneKind; setKind(k); setAction(actions[k][0]); setTime(.8); }}>{sceneKinds.map(k => <option key={k}>{k}</option>)}</select><select aria-label="Activity" value={action} onChange={event => setAction(event.target.value as CharacterAction)}>{actions[kind].map(a => <option key={a}>{a}</option>)}</select><label>Time <input aria-label="Pose time" type="range" min="0" max="6" step=".01" value={time} onChange={event => { setPlay(false); setTime(Number(event.target.value)); }}/>{time.toFixed(2)}s</label><button onClick={() => setPlay(!play)}>{play ? 'Pause' : 'Play'}</button><button onClick={() => window.dispatchEvent(new Event('export-model'))}>Export pose as GLB</button><small>Drag to orbit · scroll to zoom · animations live in TypeScript</small></header><div id="stage"><Canvas orthographic camera={{ zoom: 125, near: .1, far: 100 }} dpr={[1,1.5]} gl={{ antialias: true, preserveDrawingBuffer: true }}><ambientLight color="#fff9f0" intensity={.8}/><hemisphereLight args={['#fff9ef','#a394ad',.8]}/><directionalLight position={[-4,8,6]} color="#fff4e4" intensity={2.5}/><directionalLight position={[5,4,-3]} color="#dcd6ff" intensity={.8}/><Model kind={kind} action={action} time={time} play={play}/></Canvas></div></>;
+  return <><header><h1>Daniel · scene studio</h1><select aria-label="Scene" value={kind} onChange={event => { const k = event.target.value as SceneKind; setKind(k); setAction(actions[k][0]); setTime(k === 'hero' ? GREETING_PREVIEW_TIME : .8); }}>{sceneKinds.map(k => <option key={k}>{k}</option>)}</select><select aria-label="Activity" value={action} onChange={event => setAction(event.target.value as CharacterAction)}>{actions[kind].map(a => <option key={a}>{a}</option>)}</select><label>Time <input aria-label="Pose time" type="range" min="0" max="6" step=".01" value={time} onChange={event => { setPlay(false); setTime(Number(event.target.value)); }}/>{time.toFixed(2)}s</label><button onClick={() => setPlay(!play)}>{play ? 'Pause' : 'Play'}</button><button onClick={() => window.dispatchEvent(new Event('export-model'))}>Export pose as GLB</button><small>Drag to orbit · scroll to zoom · animations live in TypeScript</small></header><div id="stage"><Canvas orthographic camera={{ zoom: 125, near: .1, far: 100 }} dpr={[1,1.5]} gl={{ antialias: true, preserveDrawingBuffer: true }}><ambientLight color="#fff9f0" intensity={.8}/><hemisphereLight args={['#fff9ef','#a394ad',.8]}/><directionalLight position={[-4,8,6]} color="#fff4e4" intensity={2.5}/><directionalLight position={[5,4,-3]} color="#dcd6ff" intensity={.8}/><Model kind={kind} action={action} time={time} play={play}/></Canvas></div></>;
 }
 createRoot(document.getElementById('studio')!).render(<Studio/>);

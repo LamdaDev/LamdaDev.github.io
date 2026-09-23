@@ -68,7 +68,7 @@ To adjust the character's appearance, edit the palette, proportions, hair sweep 
 
 | Scene | Sequence |
 | --- | --- |
-| Hero | Four-second wave-and-pause loop |
+| Hero | Six-second greeting: lift through the front, reach high beside the head with upright fingers, settle, then wave; short straight arms, unchanged idle, subtle nod and upper-body sway |
 | About | Order and receive boba for 2.4 visible seconds once, then continue sipping |
 | Skills | Continuous gaming, keyboard taps, mouse movement, and blinking |
 | Projects | Code for 6 seconds, drink Coke Zero for 2 seconds, nap for 3 seconds, repeat |
@@ -186,6 +186,8 @@ npm.cmd run capture
 ```
 
 This writes `hero.png`, `about.png`, `about-matcha.png`, `about-taro.png`, `skills.png`, `projects.png`, and `experience.png` under `public/previews/`. Rebuild afterward so `dist/` receives the updated assets. Commit the previews with source changes that alter a scene's appearance.
+
+Use `npm run capture -- --hero` to refresh only the greeting preview. The hero's reduced-motion and studio preview uses the raised-hand pose at 1.9 seconds.
 
 ## Design tokens
 
