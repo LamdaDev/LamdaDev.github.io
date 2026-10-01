@@ -54,7 +54,14 @@ test('renders complete factual content, native anchors and valid local downloads
   await expect(page.locator('.project-card').first()).toContainText('still in the design stage');
   await expect(page.locator('.project-card').last()).toContainText('11-member Agile team');
   await expect(page.locator('.project-card').last()).toContainText('first place in the cohort by the professor');
-  await expect(page.locator('.concept-label')).toHaveText(['Concept preview', 'Concept preview']);
+  await expect(page.locator('.concept-label')).toHaveCount(0);
+  const projectScreenshots = page.locator('.project-preview img');
+  await expect(projectScreenshots).toHaveCount(2);
+  for (const image of await projectScreenshots.all()) {
+    await image.scrollIntoViewIfNeeded();
+    await expect.poll(() => image.evaluate((element: HTMLImageElement) => element.complete && element.naturalWidth > 0)).toBe(true);
+    await expect(image).toHaveAttribute('alt', /TransitOps|GitToCampus/);
+  }
   expect(await page.locator('.project-link').evaluateAll(anchors => anchors.map(anchor => anchor.getAttribute('href')))).toEqual([
     'https://github.com/LamdaDev/TransitOps-Montreal', 'https://github.com/LamdaDev/GitToCampus',
   ]);

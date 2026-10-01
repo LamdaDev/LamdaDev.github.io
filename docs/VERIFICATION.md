@@ -2,6 +2,10 @@
 
 This record describes checks on the local portfolio implementation. It does not establish accessibility conformance, cross-browser certification, or production performance guarantees.
 
+## Deployment verification ? October 1, 2026
+
+The user-supplied TransitOps and GitToCampus screenshots replace both concept illustrations and their badges. The production build, type checking, all six sequence tests, and all 37 browser regression tests passed. Both images loaded with their original dimensions and `object-fit: contain`; desktop (1440px) and phone (390px) captures showed complete images and no horizontal overflow. The Pages workflow runs sequence tests and the production build before deploying pushes to `main`.
+
 ## Completed checks
 
 | Check | Observed result |

@@ -2,7 +2,7 @@
 
 A responsive React and TypeScript portfolio with five animated Three.js dioramas: a greeting, a boba shop, a gaming station, a coding desk, and a gym. The character is an editable procedural interpretation of Daniel's supplied chibi portrait.
 
-This is a local draft. The build writes `dist/`; none of the project scripts publish the site, and no automatic deployment workflow is included.
+The production build writes `dist/`. The GitHub Pages workflow builds and deploys pushes to `main`; feature branches remain local previews until merged. GitHub Pages must be enabled for this repository and the account must support Pages for its visibility.
 
 ## Run locally
 
@@ -32,7 +32,7 @@ The website uses React, TypeScript, Vite, Three.js, React Three Fiber, and selec
 | File or folder | Purpose |
 | --- | --- |
 | [`src/content.ts`](src/content.ts) | Skills, projects, experience, coursework, contact links, and résumé URL |
-| [`src/App.tsx`](src/App.tsx) | Page sections, copy, navigation, project cards, and project concept previews |
+| [`src/App.tsx`](src/App.tsx) | Page sections, copy, navigation, project cards, and project screenshots |
 | [`src/styles.css`](src/styles.css) | Page layout, responsive rules, typography, colors, and spacing |
 | [`src/runtime/mobile.css`](src/runtime/mobile.css) | Mobile tap targets, introduction-first layout, and the viewer's sticky header |
 | [`src/components/SceneSlot.tsx`](src/components/SceneSlot.tsx) | Accessible scene descriptions and static preview images |
@@ -56,7 +56,7 @@ The website uses React, TypeScript, Vite, Three.js, React Three Fiber, and selec
 | [`public/assets/`](public/assets/) | Portrait reference and downloadable résumé |
 | [`public/previews/`](public/previews/) | Static renders of the actual dioramas |
 
-Keep factual dates, results, and development statuses in `content.ts` accurate. TransitOps is presented as ongoing work, its LLM analyst as design work, and the two project pictures as concepts rather than product screenshots.
+Keep factual dates, results, and development statuses in `content.ts` accurate. TransitOps is presented as ongoing work, its LLM analyst as design work, and the two project pictures are user-supplied product screenshots.
 
 ## Character and animation editing
 
@@ -131,43 +131,17 @@ The development studio lets you select a scene and activity, scrub the gesture t
 
 The scene geometry, monitor graphics, and decorative artwork are generated in this repository. The portrait and résumé are user-supplied. Google Fonts supplies DM Sans and Press Start 2P; the site uses system fallbacks if font loading is unavailable. Installed library licenses remain with their packages.
 
-## Replace the project concept previews
+## Project screenshots
 
-The project pictures are separate from the animated coding scene.
+The supplied images live in `public/assets/projects/transitops.png` and `public/assets/projects/gittocampus.png`. Replace those files to refresh the project cards. `TransitPreview()` and `CampusPreview()` in `src/App.tsx` define their alternative text and intrinsic dimensions; update those when changing the images.
 
-1. Add real screenshots under `public/assets/projects/`, for example `transitops.webp` and `gittocampus.webp`.
-2. Edit **`TransitPreview()`** and **`CampusPreview()`** in [`src/App.tsx`](src/App.tsx).
-3. Replace each function's concept artwork with its screenshot. Preserve the IDs `transit-preview` and `campus-preview` if existing links or checks use them.
-4. Replace the concept-specific accessible label with an accurate screenshot description and remove the visible “Concept preview” label.
+The 16:10 card windows preserve each complete screenshot without cropping or overlays. The GitToCampus portrait screenshot is centered in its window. Screenshot framing and day/night backgrounds are defined by the `project-preview--screenshot` rules in `src/styles.css`.
 
-For example, the TransitOps component can return:
+## GitHub Pages deployment
 
-```tsx
-return (
-  <div className="project-preview project-preview--screenshot" id="transit-preview">
-    <img
-      src="/assets/projects/transitops.webp"
-      alt="TransitOps dashboard showing route health and vehicle activity"
-      width="1600"
-      height="1000"
-      loading="lazy"
-    />
-  </div>
-);
-```
+The workflow in `.github/workflows/deploy.yml` runs the sequence tests, builds the prerendered site with Node.js 22, uploads `dist/`, and deploys it to **https://lamdadev.github.io/**. It runs on pushes to `main` and can also be started manually from GitHub Actions. The repository's Pages source must be **GitHub Actions**.
 
-Add the corresponding rule to `src/styles.css`:
-
-```css
-.project-preview--screenshot { padding: 0; }
-.project-preview--screenshot img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-```
-
-The preview area uses a **16:10** aspect ratio. `contain` preserves the full screenshot; use `cover` only if cropping is appropriate. Adjust the example alternative text to describe the actual image.
+Feature branches do not deploy automatically. To publish an update, merge it into `main` and push. Review the **Deploy portfolio to GitHub Pages** run in the repository's Actions tab for the result.
 
 ### Résumé and portrait
 

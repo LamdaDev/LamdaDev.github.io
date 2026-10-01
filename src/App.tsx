@@ -49,22 +49,15 @@ function SceneWindow({ kind, label, caption }: { kind: 'about' | 'skills' | 'pro
   </figure>;
 }
 
-/** Replace this component's inner artwork with a real screenshot when available. */
 export function TransitPreview() {
-  return <div className="project-preview transit-preview" id="transit-preview" role="img" aria-label="Concept preview: transit dashboard with schematic routes and vehicle status panels; not an actual product screenshot.">
-    <div className="transit-console">
-      <div className="console-toolbar"><span className="mini-logo"><Icon name="window" />TransitOps</span><span className="console-toolbar-right"><i /><i /><i /></span></div>
-      <div className="transit-layout"><div className="console-sidebar"><span className="sidebar-active">▦</span><span>⌁</span><span>☷</span><span>◷</span></div><div className="transit-dashboard"><div className="map-header"><span>Route overview</span><span>MONTRÉAL</span></div><svg className="route-map" viewBox="0 0 400 180" aria-hidden="true"><defs><pattern id="transit-grid" width="30" height="30" patternUnits="userSpaceOnUse"><path d="M30 0H0v30" fill="none" stroke="#e9e3ee" /></pattern></defs><rect width="400" height="180" fill="url(#transit-grid)" /><path d="M-10 145h92q28 0 28-28V73q0-27 27-27h98q25 0 25 25v30q0 25 25 25h130" fill="none" stroke="#9976db" strokeWidth="9" /><path d="M20-10v59q0 29 29 29h26q28 0 28 28v64h180q27 0 27-27V-10" fill="none" stroke="#8ac5a4" strokeWidth="9" /><path d="M-10 113h41q27 0 27-27V0m137 190V0" fill="none" stroke="#ecbc8d" strokeWidth="6" />{[[110, 92], [195, 46], [280, 126], [80, 170], [310, 58]].map(([cx, cy]) => <circle key={`${cx}-${cy}`} cx={cx} cy={cy} r="7" fill="white" stroke="#554965" strokeWidth="3" />)}<g transform="translate(142 35)"><rect width="25" height="19" rx="4" fill="#6D4CCF" /><rect x="4" y="3" width="17" height="7" rx="1" fill="#faf7ff" /><circle cx="6" cy="17" r="2" fill="#292638" /><circle cx="19" cy="17" r="2" fill="#292638" /></g></svg><div className="dashboard-metrics"><span><i className="metric-dot mint-dot" />Vehicle activity</span><span><i className="metric-dot peach-dot" />Update health</span><span><i className="metric-dot purple-dot" />Route gaps</span></div></div></div>
-    </div><span className="concept-label">Concept preview</span>
+  return <div className="project-preview project-preview--screenshot project-preview--transit" id="transit-preview">
+    <img src="/assets/projects/transitops.png" alt="TransitOps Montreal dashboard showing route 24 Sherbrooke, vehicle locations, operational insights, and a route health timeline" width="1902" height="905" loading="lazy" decoding="async" />
   </div>;
 }
 
-/** Replace this component's inner artwork with a real screenshot when available. */
 export function CampusPreview() {
-  return <div className="project-preview campus-preview" id="campus-preview" role="img" aria-label="Concept preview: a campus navigation app with a classroom route inside a handheld console; not an actual product screenshot.">
-    <div className="campus-preview-copy"><span className="pixel-label">NEXT STOP</span><strong>Your next<br />classroom.</strong><span className="little-route" aria-hidden="true">● ─ ─ ─ ◇</span></div>
-    <div className="campus-device"><div className="device-speaker" /><div className="device-screen"><div className="campus-app-top"><span>GitToCampus</span><span>✦</span></div><svg viewBox="0 0 200 235" aria-hidden="true"><rect width="200" height="235" fill="#f4f6ed" /><path d="M0 75h200M50 0v235M150 0v235M0 174h200" stroke="#fff" strokeWidth="18" /><g fill="#dfded1" stroke="#c8c8bc" strokeWidth="1"><rect x="8" y="15" width="27" height="38" rx="4" /><rect x="72" y="13" width="54" height="37" rx="5" /><rect x="73" y="95" width="50" height="57" rx="5" /><rect x="165" y="99" width="28" height="54" rx="3" /><rect x="71" y="194" width="57" height="32" rx="4" /><rect x="10" y="102" width="25" height="41" rx="3" /></g><path d="M49 208V76h101v36" fill="none" stroke="#7956bd" strokeWidth="6" strokeLinejoin="round" strokeDasharray="8 5" /><circle cx="49" cy="208" r="10" fill="#e9e0fc" /><circle cx="49" cy="208" r="5" fill="#7956bd" /><path d="M138 100a12 12 0 1 1 24 0c0 9-12 20-12 20s-12-11-12-20Z" fill="#7956bd" /><circle cx="150" cy="99" r="4" fill="#fff" /><g fill="#9bc5a1"><circle cx="182" cy="33" r="10" /><circle cx="17" cy="210" r="9" /><circle cx="178" cy="204" r="12" /></g></svg><div className="campus-route-label"><span>↱</span><span>Find your classroom<small>Campus navigation</small></span></div></div><div className="device-controls" aria-hidden="true"><span className="dpad" /><span className="device-button" /><span className="device-button second" /></div></div>
-    <PixelStar className="campus-star" /><span className="concept-label">Concept preview</span>
+  return <div className="project-preview project-preview--screenshot project-preview--campus" id="campus-preview">
+    <img src="/assets/projects/gittocampus.png" alt="GitToCampus mobile app showing Concordia's downtown campus buildings on a map and the destination search field" width="221" height="455" loading="lazy" decoding="async" />
   </div>;
 }
 
