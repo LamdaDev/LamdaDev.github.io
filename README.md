@@ -1,7 +1,7 @@
-# Hey, I'm Daniel ??
+# Hey, I'm Daniel 👋
 
 A little corner for my projects, tiny adventures, and big ideas.
 
-Fueled by boba, gym days, and late-night games. ????
+Fueled by boba, gym days, and late-night games. 🧋🎮
 
-[Step into my little world ?](https://lamdadev.github.io/)
+[Step into my little world →](https://lamdadev.github.io/)
