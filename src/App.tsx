@@ -51,18 +51,25 @@ function SceneWindow({ kind, label, caption }: { kind: 'about' | 'skills' | 'pro
 
 export function TransitPreview() {
   return <div className="project-preview project-preview--screenshot project-preview--transit" id="transit-preview">
-    <img src="/assets/projects/transitops.png" alt="TransitOps Montreal dashboard showing route 24 Sherbrooke, vehicle locations, operational insights, and a route health timeline" width="1902" height="905" loading="lazy" decoding="async" />
+    <div className="project-browser-bar"><span className="project-browser-dots" aria-hidden="true"><i /><i /><i /></span><span>TransitOps / route health</span><a href="/assets/projects/transitops.png" target="_blank" rel="noreferrer" aria-label="Open the full TransitOps screenshot in a new tab"><Icon name="external" /></a></div>
+    <a className="project-dashboard-frame" href="/assets/projects/transitops.png" target="_blank" rel="noreferrer" aria-label="View the full TransitOps dashboard screenshot (opens in a new tab)">
+      <img src="/assets/projects/transitops.png" alt="TransitOps Montreal dashboard showing route 24 Sherbrooke, vehicle locations, operational insights, and a route health timeline" width="1902" height="905" loading="lazy" decoding="async" />
+    </a>
   </div>;
 }
 
 export function CampusPreview() {
   return <div className="project-preview project-preview--screenshot project-preview--campus" id="campus-preview">
-    <img src="/assets/projects/gittocampus.png" alt="GitToCampus mobile app showing Concordia's downtown campus buildings on a map and the destination search field" width="221" height="455" loading="lazy" decoding="async" />
+    <span className="project-device-label">MOBILE APP</span>
+    <a className="project-phone" href="/assets/projects/gittocampus.png" target="_blank" rel="noreferrer" aria-label="View the full GitToCampus mobile screenshot (opens in a new tab)">
+      <img src="/assets/projects/gittocampus.png" alt="GitToCampus mobile app showing Concordia's downtown campus buildings on a map and the destination search field" width="221" height="455" loading="lazy" decoding="async" />
+    </a>
+    <a className="project-device-note" href="/assets/projects/gittocampus.png" target="_blank" rel="noreferrer">View full screenshot<Icon name="external" /><span className="sr-only"> (opens in a new tab)</span></a>
   </div>;
 }
 
 function ProjectCard({ project }: { project: typeof projects[number] }) {
-  return <article className="project-card">{project.id === 'transit' ? <TransitPreview /> : <CampusPreview />}<div className="project-body"><div className="project-topline"><span className={`project-status status-${project.id}`}>{project.id === 'transit' ? <span className="status-dot" /> : <Icon name="star" />}{project.status}</span><span className="project-date">{project.dates}</span></div><h3>{project.title}</h3><p className="project-caption">{project.caption}</p><p className="project-description">{project.description}</p><ul className="tech-badges" aria-label="Technologies">{project.tech.map(tech => <li key={tech}>{tech}</li>)}</ul><details className="project-details"><summary>Inside the build<span aria-hidden="true">+</span></summary><ul>{project.details.map(detail => <li key={detail}>{detail}</li>)}</ul></details><a className="project-link" href={project.url} target="_blank" rel="noreferrer">View repository<Icon name="external" /><span className="sr-only"> for {project.title} (opens in a new tab)</span></a></div></article>;
+  return <article className={`project-card project-card--${project.id}`}>{project.id === 'transit' ? <TransitPreview /> : <CampusPreview />}<div className="project-body"><div className="project-topline"><span className={`project-status status-${project.id}`}>{project.id === 'transit' ? <span className="status-dot" /> : <Icon name="star" />}{project.status}</span><span className="project-date">{project.dates}</span></div><h3>{project.title}</h3><p className="project-caption">{project.caption}</p><p className="project-description">{project.description}</p><ul className="tech-badges" aria-label="Technologies">{project.tech.map(tech => <li key={tech}>{tech}</li>)}</ul><details className="project-details" open={project.id === 'campus'}><summary>Inside the build<span aria-hidden="true">+</span></summary><ul>{project.details.map(detail => <li key={detail}>{detail}</li>)}</ul></details><a className="project-link" href={project.url} target="_blank" rel="noreferrer">View repository<Icon name="external" /><span className="sr-only"> for {project.title} (opens in a new tab)</span></a></div></article>;
 }
 
 export default function App() {
