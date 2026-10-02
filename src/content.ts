@@ -44,9 +44,9 @@ export const experience = [
   },
   {
     company: 'The CSL Group Inc.', logo: '/assets/companies/csl-group.png', tone: 'mint', role: 'Software Developer Intern', dates: 'May 2024 – August 2024 and May 2025 – August 2025',
-    description: 'Built scalable Python and SQL ETL pipelines across Databricks, Snowflake, Azure, and SQL Server for maritime logistics operations.',
-    highlight: 'Millions of shipment records migrated · 60 minutes saved per workflow run',
-    details: ['Migrated millions of production shipment records for maritime logistics operations.', 'Migrated 10,000+ XREF records and 10+ Power BI datasets into Databricks.', 'Standardized data sources and reduced Azure DevOps workflow runtime by 60 minutes per run.'],
+    description: 'Built scalable Python and SQL ETL pipelines across Databricks, Azure, and SQL Server to migrate production shipment data into Snowflake for maritime logistics operations.',
+    highlight: '30,000,000+ shipment records migrated · 60 minutes saved per workflow run',
+    details: ['Migrated 30,000,000+ production shipment records into Snowflake for maritime logistics operations.', 'Migrated 10,000+ SharePoint records and 10+ Power BI datasets into Databricks.', 'Standardized data sources and reduced Azure DevOps workflow runtime by 60 minutes per run.'],
   },
   {
     company: 'Ubisoft', logo: '/assets/companies/ubisoft.png', tone: 'peach', role: 'Frontend Developer Intern', dates: 'September 2023 – December 2023',

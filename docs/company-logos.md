@@ -12,7 +12,7 @@ Retrieved September 15, 2026. These local assets identify the employers listed i
 ## Ericsson
 
 - Official starting page: [Ericsson logo media kit](https://www.ericsson.com/en/newsroom/media-kits/logo).
-- Public library linked by that page: [Ericsson Brand House — light](https://mediabank.ericsson.net/admin/mb/?h=dbeb87a1bcb16fa379c0020bdf713872).
+- Public library linked by that page: [Ericsson Brand House - light](https://mediabank.ericsson.net/admin/mb/?h=dbeb87a1bcb16fa379c0020bdf713872).
 - Library entry: **Ericsson Logotype and Econ**, media ID `107977`, internal ID `90980`.
 - [Official archive download](https://mediabank.ericsson.net/admin/mb/_download.php?media_ids=107977&template=original&h=dbeb87a1bcb16fa379c0020bdf713872&p=dccda36951e6721097a93eae5c593859).
 - Selected archive member: `_Digital/Vertical Lockup/Black/PNG/ERI_vertical_RGB.png`.

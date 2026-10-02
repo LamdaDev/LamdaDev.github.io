@@ -23,7 +23,7 @@ const Y_AXIS = new THREE.Vector3(0, 1, 0);
  */
 export function createCharacter(): ChibiCharacter {
   const root = new THREE.Group();
-  root.name = 'Daniel — articulated chibi';
+  root.name = 'Daniel - articulated chibi';
   const geometries = new Set<THREE.BufferGeometry>();
   const materials = new Set<THREE.Material>();
   const geometry = <T extends THREE.BufferGeometry>(g: T): T => { geometries.add(g); return g; };
@@ -80,7 +80,7 @@ export function createCharacter(): ChibiCharacter {
   ellipsoid(root, 'Trouser hips', [0, 1.00, -.005], [.365, .19, .245], trousers);
 
   const head = new THREE.Group();
-  head.name = 'Head — expression and neck pivot'; head.position.y = 2.48; root.add(head);
+  head.name = 'Head - expression and neck pivot'; head.position.y = 2.48; root.add(head);
   ellipsoid(head, 'Warm rounded face', [0, -.02, .015], [.755, .775, .595], skin);
   ellipsoid(head, 'Soft chin', [0, -.43, .085], [.455, .275, .37], skin);
   for (const side of [-1, 1]) {
@@ -132,8 +132,8 @@ export function createCharacter(): ChibiCharacter {
   }
 
   // Eyes have separate open and closed meshes so naps and blinks read at small sizes.
-  const openEyes = new THREE.Group(); openEyes.name = 'Eyes — open'; head.add(openEyes);
-  const closedEyes = new THREE.Group(); closedEyes.name = 'Eyes — closed'; head.add(closedEyes);
+  const openEyes = new THREE.Group(); openEyes.name = 'Eyes - open'; head.add(openEyes);
+  const closedEyes = new THREE.Group(); closedEyes.name = 'Eyes - closed'; head.add(closedEyes);
   const brows: THREE.Group[] = [];
   for (const side of [-1, 1]) {
     const x = side * .268;
@@ -213,14 +213,15 @@ export function createCharacter(): ChibiCharacter {
       sleeveStart.copy(elbow).normalize().multiplyScalar(coverShoulder ? -.018 : 0);
       upperEnd.copy(elbow).multiplyScalar(.62); connect(sleeve, sleeveStart, upperEnd);
     }
-    function set(x: number, y: number, z: number, fingers: number, handRoll = 0) {
+    function set(x: number, y: number, z: number, fingers: number, handRoll = 0, elbowUp = false) {
       shoulder.rotation.set(0, 0, 0);
       target.set(x - shoulder.position.x, y - shoulder.position.y, z);
       direction.copy(target);
       const distance = Math.max(.001, direction.length()); direction.divideScalar(distance);
       const armLength = .48;
       const height = Math.sqrt(Math.max(.002, armLength * armLength - distance * distance * .25));
-      bend.set(side, -.36, -.28)
+      // Desk drinking keeps the elbow above the work surface throughout the reach.
+      bend.set(side, elbowUp ? .65 : -.36, elbowUp ? -.18 : -.28)
         .addScaledVector(direction, -bend.dot(direction)).normalize();
       elbow.copy(target).multiplyScalar(.5).addScaledVector(bend, height);
       poseArm(fingers, handRoll);
@@ -260,8 +261,9 @@ export function createCharacter(): ChibiCharacter {
     ellipsoid(shoe, 'Sneaker upper', [0, .018, .045], [.170, .106, .254], white);
     line(shoe, 'Sneaker trim', [[-.14, .02, .155], [0, .05, .267], [.14, .02, .155]], .012, seam);
     for (let i = 0; i < 3; i++) line(shoe, 'Sneaker lace', [[-.076, .102 - i * .005, i * .05], [.076, .102 - i * .005, i * .05]], .010, sole);
-    function set(seated: boolean, bench: boolean) {
-      if (seated) { knee.set(side * .235, .98, .53); ankle.set(side * .235, .48, .60); }
+    function set(seated: boolean, bench: boolean, groundedSeat: boolean) {
+      // The gym seat sits higher than the desk chair; lower resting feet to its mat.
+      if (seated) { knee.set(side * .235, .98, .53); ankle.set(side * .235, groundedSeat ? .266 : .48, .60); }
       else if (bench) {
         // The diorama rotates the rig onto its back: negative local Z is down.
         // Splay the knees outside the bench before dropping the shins to the floor.
@@ -279,7 +281,7 @@ export function createCharacter(): ChibiCharacter {
   function update(action: CharacterAction, time: number) {
     const t = Math.max(0, time);
     const seated = ['game', 'code', 'drink', 'nap', 'rest'].includes(action);
-    leftLeg.set(seated, action === 'bench'); rightLeg.set(seated, action === 'bench');
+    leftLeg.set(seated, action === 'bench', action === 'rest'); rightLeg.set(seated, action === 'bench', action === 'rest');
     upperBody.position.set(0, 0, 0); upperBody.rotation.set(0, 0, 0);
     head.position.set(0, 2.48, 0); head.rotation.set(0, 0, 0);
     const blinking = (t + .6) % 4.4 > 4.23;
@@ -341,8 +343,16 @@ export function createCharacter(): ChibiCharacter {
       const lift = .5 - .5 * Math.cos(Math.min(1, (t % period) / period) * TAU);
       const top = action === 'drink' ? 1.94 : action === 'rest' ? 1.83 : 1.65;
       const forward = action === 'sip' ? .765 : .65;
-      right.set(.16 + (1 - lift) * .18, 1.42 + lift * (top - 1.42), .79 + lift * (forward - .79), 1.1);
-      left.set(-.46, seated ? 1.04 : 1.03, seated ? .48 : .18, .9);
+      // Bring the straw or drink opening to the center of the mouth, not its cheek.
+      const mouthX = action === 'sip' ? -.04 : 0;
+      // A seated soda sits above the keyboard even at the bottom of its arc.
+      // Keep both elbows high instead of reusing the low boba/gym resting pose.
+      const drinkingAtDesk = action === 'drink';
+      const startHeight = drinkingAtDesk ? 1.84 : 1.42;
+      right.set(THREE.MathUtils.lerp(.34, mouthX, lift), THREE.MathUtils.lerp(startHeight, top, lift),
+        .79 + lift * (forward - .79), 1.1, 0, drinkingAtDesk);
+      if (drinkingAtDesk) left.set(-.19, 1.77, .65, 1.14, 0, true);
+      else left.set(-.46, seated ? 1.04 : 1.03, seated ? .48 : .18, .9);
       head.rotation.z = -.025 * lift;
       if (lift > .62) { smile.visible = false; sippingMouth.visible = true; }
     } else if (action === 'game' || action === 'code') {
@@ -358,7 +368,8 @@ export function createCharacter(): ChibiCharacter {
       head.rotation.z = -.065;
     } else if (action === 'bench') {
       const lift = .5 - .5 * Math.cos(t * TAU / 1.65);
-      const z = .65 + lift * .55;
+      // Stay inside the two .48-unit arm segments instead of stretching at lockout.
+      const z = .65 + lift * .30;
       left.set(-.48, 1.65, z, 1.42); right.set(.48, 1.65, z, 1.42);
       brows[0].rotation.z = -.06; brows[1].rotation.z = .06;
     }

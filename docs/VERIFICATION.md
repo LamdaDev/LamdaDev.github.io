@@ -2,6 +2,48 @@
 
 This record describes checks on the local portfolio implementation. It does not establish accessibility conformance, cross-browser certification, or production performance guarantees.
 
+## Resume and punctuation refresh - October 1, 2026
+
+Read the supplied one-page `Daniel_Lam_CV_SWE.pdf` and compared all four employment entries against its text and rendered page. Updated CSL's migration count to 30,000,000+ production shipment records into Snowflake and corrected the 10,000+ record source to SharePoint. Other employers' roles, dates, and accomplishments already match. The education date now ends in May 2027, labeled expected because it is a future date.
+
+The public and built resume downloads are byte-for-byte copies of the supplied PDF. All three SHA-256 hashes match: `ceca92de754ba3c6ed8dd335bb0f17d667132a395b056ee5e0f45bb3acb5621a`. Both existing download links retain their filenames and URLs.
+
+Removed em dashes from site copy, metadata, scene accessibility labels, documentation, and human-readable model names, with matching model-check lookups updated. En dashes in date ranges remain. Source and production-output scans found no em dashes.
+
+Type checking, production build, all model assertions, and six focused browser checks passed. These cover factual content, downloads, four responsive opening layouts, and prerendered content without JavaScript. The existing animation changes remain intact. These checks were completed on `boba-three-js` before merging the reviewed changes into `main`.
+
+## Platform and desk animation fixes - October 1, 2026
+
+Two follow-up animation corrections were made on `boba-three-js`. The monitor's three platforms now share a level; the player follows adjacent landings left -> middle -> right -> middle -> left, with grounded pauses, a visible jump arc, and direction changes at rest. The soda activity uses a higher wrist path and raised elbow poses for both arms, keeping the held can and hands above the desk and keyboard while preserving mouth contact. Existing activity timing and hard cuts are unchanged.
+
+Geometry-based regression checks sample actual meshes rather than repeat the animation formulas:
+
+- 541 game frames at 120 Hz: equal platform tops, landing order `0 -> 1 -> 2 -> 1 -> 0`, planted pauses on every platform, airborne gap crossings, no platform penetration, and zero loop position/velocity error.
+- 241 soda frames at 120 Hz: 24 arm, hand, and can meshes clear the desk by at least .13266 units and the keyboard by .02600 units within their footprints. The can opening remains .02187 units from the mouth at the peak.
+- Existing greeting, gym, boba, disposal, and GLB export checks continue to pass.
+
+Actual WebGL drinking poses were reviewed at nine times from default, front, and side views; nine game takeoff/airborne/landing poses were reviewed in the full scene and a monitor close-up. No new face/head clipping or page errors were observed. The corrected gaming fallback PNG was refreshed; other fallback images were preserved.
+
+Type checking, production build, six sequence tests, all model assertions, and all 37 local browser checks passed (browser suite: 2.8 minutes). These checks were performed locally with Chromium/software WebGL before publication.
+
+## Animation audit - October 1, 2026
+
+The published portfolio passed all 37 browser checks. Real-time observation confirmed the boba ordering handoff, the 6/8/11-second coding-drink-nap cycle, the 5/9-second bench/rest cycle, continuous greeting and gaming, and the existing motion, theme, flavor, and scene-viewer controls. Nine actual WebGL activity poses were inspected; no site JavaScript errors or same-origin failed requests were observed.
+
+Four improvements were made locally on `boba-three-js`: drinks now approach the mouth rather than the cheek, bench arms retain their length at extension, gym resting feet contact the mat, and the arcade character returns through its level without teleporting. The greeting and hard cuts between different activities were preserved.
+
+After these changes, type checking, the production build, all six sequence tests, and all 37 browser checks passed (local suite: 1.7 minutes). Expanded model checks measured:
+
+- 151 bench frames: all four arm segments stay at .48 units, with finite transforms and zero bar-to-hand-axis error.
+- Peak straw/can/bottle-to-mouth gaps: .02972, .02187, and .01906 units, respectively (all below .05).
+- 121 gym rest frames: soles stay .0005 units above the mat, with no penetration.
+- 271 arcade frames: zero loop position error and no wrap position step; wrap velocity difference is .000247.
+- Existing 733-frame greeting, boba material/disposal, nap eyes, static GLB export, and all five night-lighting/resource checks passed.
+
+Default, front, and side renders of the changed poses were reviewed. Changed action transforms sampled at 120 Hz remained finite and continuous within each activity. Five affected fallback PNGs were refreshed: three boba flavors, gaming, and gym rest. The greeting and coding fallback PNGs were preserved.
+
+This is headless Chromium/software WebGL evidence, not a frame-rate or battery measurement on a physical phone. The animation improvements were verified locally before publication.
+
 ## Deployment verification ? October 1, 2026
 
 The user-supplied TransitOps and GitToCampus screenshots replace both concept illustrations and their badges. The production build, type checking, all six sequence tests, and all 37 browser regression tests passed. Both images loaded with their original dimensions and `object-fit: contain`; desktop (1440px) and phone (390px) captures showed complete images and no horizontal overflow. The Pages workflow runs sequence tests and the production build before deploying pushes to `main`.
@@ -116,6 +158,6 @@ node scripts/inspect-page.mjs
 - The hidden-page test simulates the page-visibility event; it does not establish behavior under every operating system's background throttling policy.
 - No historical screenshot baseline was available, so visual regression against a previous design remains inconclusive.
 - Automated checks and selected keyboard observations do not replace a complete screen-reader and accessibility audit.
-- The two project previews are intentionally labeled concepts; they are not screenshots of deployed products.
+- The two project images are user-supplied screenshots. The TransitOps frame trims its source image's page gutters/header; the GitToCampus phone frame preserves the full portrait image.
 - Factual portfolio content is based on the supplied prompt and documents. The implementation does not independently certify employment history or project outcomes.
 - No publishing or deployment is part of these checks.

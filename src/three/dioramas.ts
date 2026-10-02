@@ -36,6 +36,11 @@ export function createDiorama(kind: SceneKind): Diorama {
   const add = (...items: THREE.Object3D[]) => root.add(...items);
   const at = <T extends THREE.Object3D>(item: T, x: number, y: number, z: number) => { item.position.set(x, y, z); return item; };
   const ink = '#534c66';
+  const arcadePlatformCenters = [-.55, 0, .55];
+  const arcadePlatformY = -.25;
+  const arcadePlatformHeight = .055;
+  // Bottom of the player's .065-high feet, centered .06 below its body.
+  const arcadePlayerFeetY = -.0925;
 
   // Targets are the actual prop meshes. Empty child anchors track their parent
   // through the existing animation without adding visible or pickable geometry.
@@ -120,15 +125,17 @@ export function createDiorama(kind: SceneKind): Diorama {
     });
     if (gaming) {
       // An original little pixel world, built from real low-poly meshes.
-      for (const [x, y, w] of [[-.55, -.25, .43], [.13, -.06, .45], [.55, .13, .31]]) {
-        active.add(p.box(w, .055, .02, c.lavender, [x, y, 0], .006));
+      for (const x of arcadePlatformCenters) {
+        const platform = p.box(.36, arcadePlatformHeight, .02, c.lavender, [x, arcadePlatformY, 0], .006);
+        platform.name = 'arcade-platform'; active.add(platform);
       }
       for (const [x, y] of [[-.31, .22], [.17, .18], [.55, .35]]) {
         const star = p.star(.063, '#f4d997'); star.position.set(x, y, .003); star.scale.z = .15; active.add(star);
       }
       const player = new THREE.Group(); player.name = 'arcade-player';
       player.add(p.box(.11, .12, .025, c.mint, [0, 0, 0], .008));
-      player.add(p.box(.15, .065, .025, c.mint, [0, -.06, 0], .007));
+      const feet = p.box(.15, .065, .025, c.mint, [0, -.06, 0], .007);
+      feet.name = 'arcade-player-feet'; player.add(feet);
       player.add(p.ball(.01, ink, [.025, .025, .026])); active.add(player);
       enableScreenEmission();
       return { group, player };
@@ -256,11 +263,11 @@ export function createDiorama(kind: SceneKind): Diorama {
     for (let i = 0; i < 3; i++) add(p.box(.1, .37 - i * .025, .21, [c.peach, c.lavender, c.mint][i], [1.25 + i * .13, 2.62, -1.52], .016));
     // An L-shaped surface keeps the torso clear while the input devices sit
     // directly under the articulated fingertips, rather than out of reach.
-    add(p.box(2.3, .14, 1.43, c.cream, [-.85, 1.14, .17], .06));
-    add(p.box(2.10, .14, .78, c.cream, [.20, 1.14, 1.0], .06));
+    const mainSurface = p.box(2.3, .14, 1.43, c.cream, [-.85, 1.14, .17], .06); mainSurface.name = 'desk-main-surface'; add(mainSurface);
+    const keyboardSurface = p.box(2.10, .14, .78, c.cream, [.20, 1.14, 1.0], .06); keyboardSurface.name = 'desk-keyboard-surface'; add(keyboardSurface);
     for (const [x, z] of [[-1.77, -.31], [-1.77, .69], [.06, -.31], [1.09, 1.23]]) add(p.box(.095, 1.04, .095, '#a598ae', [x, .55, z], .027));
     add(p.box(1.41, .025, .64, gaming ? '#a9b9d9' : '#beabda', [.57, 1.23, .97], .012));
-    const keys = keyboard(); keys.position.set(.615, 1.27, .93); keys.rotation.y = -.35; add(keys);
+    const keys = keyboard(); keys.name = 'desk-keyboard'; keys.position.set(.615, 1.27, .93); keys.rotation.y = -.35; add(keys);
     const mouse = p.ball(.115, c.white, [1.13, 1.29, .713], [.72, .45, 1]); add(mouse);
     const screen = monitor(gaming); screen.group.position.set(-1.13, 1.23, -.35); screen.group.rotation.y = .57; add(screen.group);
     const lamp = deskLamp();
@@ -311,15 +318,29 @@ export function createDiorama(kind: SceneKind): Diorama {
       headset.add(p.ball(.055, ink, [-.49, -.42, .55], [1.3, .8, .8]));
       character.head.add(headset);
       animate = (_action, time) => {
-        const phase = (time % 4.5) / 4.5;
-        screen.player.position.set(-.59 + phase * 1.16, -.14 + Math.abs(Math.sin(phase * Math.PI * 3)) * .25, .02);
+        // Four real jumps: left -> middle -> right -> middle -> left.
+        // Grounded pauses make every landing readable before the next takeoff.
+        const cycle = 4.5;
+        const stepDuration = cycle / 4;
+        const elapsed = ((time % cycle) + cycle) % cycle;
+        const step = Math.floor(elapsed / stepDuration);
+        const stepTime = elapsed - step * stepDuration;
+        const route = [0, 1, 2, 1, 0];
+        const from = arcadePlatformCenters[route[step]];
+        const to = arcadePlatformCenters[route[step + 1]];
+        const progress = THREE.MathUtils.clamp((stepTime - .15) / .8, 0, 1);
+        const travel = .5 - .5 * Math.cos(progress * Math.PI);
+        const jump = Math.sin(progress * Math.PI) ** 2;
+        const standingY = arcadePlatformY + arcadePlatformHeight / 2 - arcadePlayerFeetY;
+        screen.player.position.set(THREE.MathUtils.lerp(from, to, travel), standingY + jump * .28, .02);
+        screen.player.scale.x = to > from ? 1 : -1;
         mouse.position.x = 1.13 + Math.sin(time * 1.4) * .033;
         mouse.position.z = .713 + Math.sin(time * 1.4) * .012;
       };
     } else {
       // A real modeled can moves between the desk and Daniel's hand.
-      const deskCoke = p.drink('coke'); deskCoke.position.set(-.2, 1.23, 1.08); add(deskCoke);
-      const handCoke = p.drink('coke'); handCoke.position.set(0, -.17, 0); character.hands.right.add(handCoke);
+      const deskCoke = p.drink('coke'); deskCoke.name = 'projects-desk-coke'; deskCoke.position.set(-.2, 1.23, 1.08); add(deskCoke);
+      const handCoke = p.drink('coke'); handCoke.name = 'projects-hand-coke'; handCoke.position.set(0, -.17, 0); character.hands.right.add(handCoke);
       target('projects-drink', [deskCoke], deskCoke, [0, .16, .14]);
       target('projects-drink', [handCoke], handCoke, [0, .16, .14]);
       const zzz = new THREE.Group();

@@ -126,7 +126,7 @@ function SceneExplorer({ selection: { kind, trigger }, onDismiss }: { selection:
         </div>
       </header>
       <p id="scene-explorer-description" className="sr-only">{scene.description}</p>
-      <div ref={stageRef} className="scene-explorer-stage" role="group" aria-label={`${scene.title} — ${ready ? 'interactive 3D view' : 'scene preview'}`}
+      <div ref={stageRef} className="scene-explorer-stage" role="group" aria-label={`${scene.title}: ${ready ? 'interactive 3D view' : 'scene preview'}`}
         aria-describedby="scene-explorer-instructions" tabIndex={ready ? 0 : -1} data-interactive={ready} onKeyDown={moveCamera}>
         <img src={kind === 'about' ? bobaPreview(flavor) : `/previews/${kind}.png`} alt="" aria-hidden="true" className="scene-explorer-preview" width="780" height="600" />
       </div>

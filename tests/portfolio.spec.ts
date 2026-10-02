@@ -70,10 +70,10 @@ test('renders complete factual content, native anchors and valid local downloads
     'January 2026 – August 2026', 'May 2024 – August 2024 and May 2025 – August 2025',
     'September 2023 – December 2023', 'April 2022 – July 2022',
   ]);
-  for (const fact of ['6 raise/clear alarm events', '3 fault conditions', '99% code coverage', '10,000+ XREF records', '10+ Power BI datasets', '60 minutes per run']) {
+  for (const fact of ['6 raise/clear alarm events', '3 fault conditions', '99% code coverage', '30,000,000+ production shipment records', '10,000+ SharePoint records', '10+ Power BI datasets', '60 minutes per run']) {
     await expect(page.locator('#experience')).toContainText(fact);
   }
-  await expect(page.locator('.education-card')).toContainText('September 2022 – Present');
+  await expect(page.locator('.education-card')).toContainText('September 2022 – May 2027 (expected)');
   for (const course of ['Computer Architecture', 'Data Structures & Algorithms', 'Operating Systems', 'Artificial Intelligence', 'Deep Learning', 'Databases', 'Object-Oriented Programming']) {
     await expect(page.locator('.education-card')).toContainText(course);
   }
