@@ -6,6 +6,7 @@ import { toggleMotion, useMotion } from '../runtime/motion';
 import type { SceneKind } from '../runtime/sequence';
 import { ThemeButton } from './ThemeButton';
 import { ScenePropDetails } from './ScenePropDetails';
+import { useLanguage } from '../i18n';
 
 const scenes: Record<SceneKind, { title: string; trigger: string; description: string }> = {
   hero: { title: 'Hello, world!', trigger: 'Explore the welcome scene', description: 'Daniel waves hello from his little lavender stage.' },
@@ -13,6 +14,14 @@ const scenes: Record<SceneKind, { title: string; trigger: string; description: s
   skills: { title: 'The gaming corner', trigger: 'Explore the gaming corner', description: 'Daniel settles in at his gaming PC, headset on and game in progress.' },
   projects: { title: 'The coding desk', trigger: 'Explore the coding desk', description: 'A closer look at Daniel’s desk, with code, Coke Zero, and a little room to recharge.' },
   experience: { title: 'The training room', trigger: 'Explore the training room', description: 'Daniel puts in a few reps on the bench, then rests with a drink of water.' },
+};
+
+const scenesFr: typeof scenes = {
+  hero: { title: 'Bonjour, tout le monde !', trigger: 'Explorer la scène d’accueil', description: 'Daniel vous salue depuis sa petite scène lavande.' },
+  about: { title: 'La pause boba', trigger: 'Explorer la boutique de boba', description: 'Une petite boutique de boba, une boisson fraîchement préparée et Daniel qui prend une pause.' },
+  skills: { title: 'Le coin jeux', trigger: 'Explorer le coin jeux', description: 'Daniel s’installe devant son PC de jeu, casque sur la tête et partie en cours.' },
+  projects: { title: 'Le bureau de code', trigger: 'Explorer le bureau de code', description: 'Un regard de plus près sur le bureau de Daniel, avec du code, du Coke Zero et un petit espace pour refaire le plein d’énergie.' },
+  experience: { title: 'Le petit gym', trigger: 'Explorer la salle d’entraînement', description: 'Daniel fait quelques répétitions de développé couché, puis se repose avec un peu d’eau.' },
 };
 
 type Selection = { kind: SceneKind; trigger: HTMLButtonElement };
@@ -27,11 +36,13 @@ export function SceneExplorerProvider({ children }: { children: ReactNode }) {
 }
 
 export function ExploreSceneButton({ kind, className = '' }: { kind: SceneKind; className?: string }) {
+  const { language, text } = useLanguage();
   const open = useContext(ExplorerContext);
+  const scene = language === 'fr' ? scenesFr[kind] : scenes[kind];
   const [ready, setReady] = useState(false);
   useEffect(() => setReady(true), []);
   return <button type="button" className={`explore-scene-button ${className}`} data-explore-kind={kind} disabled={!ready || !open}
-    aria-label={scenes[kind].trigger} aria-haspopup="dialog" title="Explore this scene"
+    aria-label={scene.trigger} aria-haspopup="dialog" title={text('Explore this scene', 'Explorer cette scène')}
     onClick={event => open?.({ kind, trigger: event.currentTarget })}>
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M14 4h6v6M20 4 10 14M10 4H5a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-5" /></svg>
   </button>;
@@ -64,6 +75,7 @@ function lockPageScroll() {
 }
 
 function SceneExplorer({ selection: { kind, trigger }, onDismiss }: { selection: Selection; onDismiss: () => void }) {
+  const { language, text } = useLanguage();
   const dialogRef = useRef<HTMLDialogElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
@@ -72,7 +84,7 @@ function SceneExplorer({ selection: { kind, trigger }, onDismiss }: { selection:
   const motion = useMotion();
   const ready = status === 'ready';
   const paused = motion.paused || motion.reduced;
-  const scene = scenes[kind];
+  const scene = language === 'fr' ? scenesFr[kind] : scenes[kind];
 
   useLayoutEffect(() => {
     const dialog = dialogRef.current;
@@ -119,39 +131,39 @@ function SceneExplorer({ selection: { kind, trigger }, onDismiss }: { selection:
     onCancel={event => { event.preventDefault(); dismiss(); }} onKeyDown={containFocus}>
     <div className={`scene-explorer-panel explorer-tone-${kind}`}>
       <header className="scene-explorer-header">
-        <div><p className="scene-explorer-eyebrow">A LITTLE CLOSER</p><h2 id="scene-explorer-title">{scene.title}</h2></div>
+        <div><p className="scene-explorer-eyebrow">{text('A LITTLE CLOSER', 'D’UN PEU PLUS PRÈS')}</p><h2 id="scene-explorer-title">{scene.title}</h2></div>
         <div className="scene-explorer-header-actions">
           <ThemeButton compact />
-          <button ref={closeRef} className="scene-explorer-close" type="button" onClick={dismiss} aria-label="Close scene viewer" title="Close (Escape)"><span aria-hidden="true">×</span></button>
+          <button ref={closeRef} className="scene-explorer-close" type="button" onClick={dismiss} aria-label={text('Close scene viewer', 'Fermer la vue de la scène')} title={text('Close (Escape)', 'Fermer (Échap)')}><span aria-hidden="true">×</span></button>
         </div>
       </header>
       <p id="scene-explorer-description" className="sr-only">{scene.description}</p>
-      <div ref={stageRef} className="scene-explorer-stage" role="group" aria-label={`${scene.title}: ${ready ? 'interactive 3D view' : 'scene preview'}`}
+      <div ref={stageRef} className="scene-explorer-stage" role="group" aria-label={`${scene.title}: ${ready ? text('interactive 3D view', 'vue 3D interactive') : text('scene preview', 'aperçu de la scène')}`}
         aria-describedby="scene-explorer-instructions" tabIndex={ready ? 0 : -1} data-interactive={ready} onKeyDown={moveCamera}>
         <img src={kind === 'about' ? bobaPreview(flavor) : `/previews/${kind}.png`} alt="" aria-hidden="true" className="scene-explorer-preview" width="780" height="600" />
       </div>
       <ScenePropDetails kind={kind} surfaceRef={stageRef} />
       <div className="scene-explorer-tools">
-        <p id="scene-explorer-instructions" className="scene-explorer-instructions">{ready ? <>Drag to rotate · Scroll or pinch to zoom<br /><span>Keyboard: focus the scene, then use arrows, + / −, or Home.</span></> : scene.description}</p>
-        <p className="scene-explorer-status" role="status">{status === 'loading' ? 'Loading the 3D view…' : status === 'unavailable' ? '3D interaction is unavailable here. Enjoy the scene preview.' : ''}</p>
-        <div className="scene-explorer-controls" role="group" aria-label="Camera controls">
+        <p id="scene-explorer-instructions" className="scene-explorer-instructions">{ready ? <>{text('Drag to rotate · Scroll or pinch to zoom', 'Glissez pour faire tourner · Défilez ou pincez pour zoomer')}<br /><span>{text('Keyboard: focus the scene, then use arrows, + / −, or Home.', 'Clavier : sélectionnez la scène, puis utilisez les flèches, + / − ou la touche Début.')}</span></> : scene.description}</p>
+        <p className="scene-explorer-status" role="status">{status === 'loading' ? text('Loading the 3D view…', 'Chargement de la vue 3D…') : status === 'unavailable' ? text('3D interaction is unavailable here. Enjoy the scene preview.', 'L’interaction 3D n’est pas disponible ici. Profitez de l’aperçu de la scène.') : ''}</p>
+        <div className="scene-explorer-controls" role="group" aria-label={text('Camera controls', 'Commandes de la caméra')}>
           <div className="scene-explorer-control-group">
-            <button type="button" onClick={() => controlExploration('left')} disabled={!ready} aria-label="Rotate left" title="Rotate left">←</button>
-            <button type="button" onClick={() => controlExploration('right')} disabled={!ready} aria-label="Rotate right" title="Rotate right">→</button>
-            <button type="button" onClick={() => controlExploration('up')} disabled={!ready} aria-label="Rotate up" title="Rotate up">↑</button>
-            <button type="button" onClick={() => controlExploration('down')} disabled={!ready} aria-label="Rotate down" title="Rotate down">↓</button>
+            <button type="button" onClick={() => controlExploration('left')} disabled={!ready} aria-label={text('Rotate left', 'Tourner à gauche')} title={text('Rotate left', 'Tourner à gauche')}>←</button>
+            <button type="button" onClick={() => controlExploration('right')} disabled={!ready} aria-label={text('Rotate right', 'Tourner à droite')} title={text('Rotate right', 'Tourner à droite')}>→</button>
+            <button type="button" onClick={() => controlExploration('up')} disabled={!ready} aria-label={text('Rotate up', 'Tourner vers le haut')} title={text('Rotate up', 'Tourner vers le haut')}>↑</button>
+            <button type="button" onClick={() => controlExploration('down')} disabled={!ready} aria-label={text('Rotate down', 'Tourner vers le bas')} title={text('Rotate down', 'Tourner vers le bas')}>↓</button>
           </div>
           <div className="scene-explorer-control-group">
-            <button type="button" onClick={() => controlExploration('zoom-in')} disabled={!ready} aria-label="Zoom in" title="Zoom in">+</button>
-            <button type="button" onClick={() => controlExploration('zoom-out')} disabled={!ready} aria-label="Zoom out" title="Zoom out">−</button>
-            <button type="button" className="scene-explorer-reset" onClick={() => controlExploration('reset')} disabled={!ready}>Reset view</button>
+            <button type="button" onClick={() => controlExploration('zoom-in')} disabled={!ready} aria-label={text('Zoom in', 'Zoom avant')} title={text('Zoom in', 'Zoom avant')}>+</button>
+            <button type="button" onClick={() => controlExploration('zoom-out')} disabled={!ready} aria-label={text('Zoom out', 'Zoom arrière')} title={text('Zoom out', 'Zoom arrière')}>−</button>
+            <button type="button" className="scene-explorer-reset" onClick={() => controlExploration('reset')} disabled={!ready}>{text('Reset view', 'Réinitialiser la vue')}</button>
           </div>
         </div>
         <footer className="scene-explorer-footer">
           <button type="button" className="scene-explorer-motion" onClick={toggleMotion} disabled={!ready || motion.reduced} aria-pressed={paused}>
-            <span aria-hidden="true">{paused ? '▷' : 'Ⅱ'}</span>{motion.reduced ? 'Reduced motion is on' : paused ? 'Play animations' : 'Pause animations'}
+            <span aria-hidden="true">{paused ? '▷' : 'Ⅱ'}</span>{motion.reduced ? text('Reduced motion is on', 'Mouvements réduits activés') : paused ? text('Play animations', 'Lancer les animations') : text('Pause animations', 'Mettre les animations en pause')}
           </button>
-          <span className="scene-explorer-escape"><kbd>Esc</kbd> to close</span>
+          <span className="scene-explorer-escape"><kbd>{text('Esc', 'Échap')}</kbd>{text(' to close', ' pour fermer')}</span>
         </footer>
       </div>
     </div>

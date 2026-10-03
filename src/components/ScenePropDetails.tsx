@@ -1,6 +1,8 @@
 import { useEffect, useId, useRef, useState, type KeyboardEvent, type RefObject } from 'react';
 import { createPortal } from 'react-dom';
 import { sceneDetails, sceneDetailLabels } from '../sceneDetails';
+import { sceneDetailsFr, sceneDetailLabelsFr } from '../sceneDetails.fr';
+import { useLanguage } from '../i18n';
 import { pickSceneProp } from '../runtime/sceneProps';
 import { registryChanged } from '../runtime/registry';
 import type { SceneKind } from '../runtime/sequence';
@@ -9,7 +11,8 @@ type Props = { kind: SceneKind; surfaceRef: RefObject<HTMLDivElement | null> };
 type Gesture = { pointerId: number; x: number; y: number; started: number; moved: boolean };
 
 export function ScenePropDetails({ kind, surfaceRef }: Props) {
-  const details = sceneDetails[kind];
+  const { language, text } = useLanguage();
+  const details = language === 'fr' ? sceneDetailsFr[kind] : sceneDetails[kind];
   const [surface, setSurface] = useState<HTMLDivElement | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const selectedRef = useRef<string | null>(null);
@@ -19,7 +22,7 @@ export function ScenePropDetails({ kind, surfaceRef }: Props) {
   const selected = details.find(detail => detail.id === selectedId);
 
   // Notes can move later scene windows even while their animation clocks are paused.
-  useEffect(() => { if (surface) registryChanged(); }, [surface, selectedId]);
+  useEffect(() => { if (surface) registryChanged(); }, [surface, selectedId, language]);
 
   function select(id: string, button?: HTMLButtonElement) {
     lastButton.current = button ?? buttons.current.get(id) ?? null;
@@ -124,8 +127,8 @@ export function ScenePropDetails({ kind, surfaceRef }: Props) {
   return <>
     {surface && createPortal(details.map(detail => <span key={detail.id} className="scene-prop-marker" data-prop-marker={detail.id} aria-hidden="true" />), surface)}
     <div className={`scene-prop-details scene-prop-details--${kind}`} data-prop-kind={kind} onKeyDown={closeOnEscape}>
-      <p className="scene-prop-hint"><strong>Little details</strong><span aria-hidden="true"> · </span>Tap a prop or choose below.</p>
-      <div className="scene-prop-buttons" role="group" aria-label={`Personal details in the ${sceneDetailLabels[kind]}`}>
+      <p className="scene-prop-hint"><strong>{text('Little details', 'Petits détails')}</strong><span aria-hidden="true"> · </span>{text('Tap a prop or choose below.', 'Touchez un objet ou choisissez ci-dessous.')}</p>
+      <div className="scene-prop-buttons" role="group" aria-label={text(`Personal details in the ${sceneDetailLabels[kind]}`, `Détails personnels dans ${sceneDetailLabelsFr[kind]}`)}>
         {details.map(detail => <button key={detail.id} type="button" data-prop-button={detail.id}
           ref={element => { if (element) buttons.current.set(detail.id, element); else buttons.current.delete(detail.id); }}
           disabled={!surface} aria-expanded={selectedId === detail.id} aria-controls={noteId}
@@ -136,10 +139,10 @@ export function ScenePropDetails({ kind, surfaceRef }: Props) {
       <div className="scene-prop-announcement" id={noteId} aria-live="polite" aria-atomic="true">
         {selected && <div className="scene-prop-note" data-prop-note={selected.id}>
           <div><p className="scene-prop-note-title">{selected.title}</p><p className="scene-prop-note-body">{selected.body}</p></div>
-          <button type="button" className="scene-prop-dismiss" aria-label="Close personal detail" onClick={dismiss}><span aria-hidden="true">×</span></button>
+          <button type="button" className="scene-prop-dismiss" aria-label={text('Close personal detail', 'Fermer le détail personnel')} onClick={dismiss}><span aria-hidden="true">×</span></button>
         </div>}
       </div>
-      <noscript><div className="scene-prop-noscript"><p>JavaScript is off. Here are the little details from this scene:</p><ul>{details.map(detail => <li key={detail.id}><strong>{detail.title}</strong> {detail.body}</li>)}</ul></div></noscript>
+      <noscript><div className="scene-prop-noscript"><p>{text('JavaScript is off. Here are the little details from this scene:', 'JavaScript est désactivé. Voici les petits détails de cette scène :')}</p><ul>{details.map(detail => <li key={detail.id}><strong>{detail.title}</strong> {detail.body}</li>)}</ul></div></noscript>
     </div>
   </>;
 }

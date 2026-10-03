@@ -1,0 +1,41 @@
+/* Native language links remain useful before JavaScript loads. */
+.language-toggle { display: flex; align-items: center; flex-shrink: 0; padding: 3px; border: 1px solid var(--line); border-radius: 10px; background: var(--cream); }
+.language-option { display: grid; place-items: center; min-width: 38px; min-height: 36px; padding: 4px 7px; border-radius: 7px; color: var(--muted); font-size: 11px; font-weight: 750; letter-spacing: .03em; }
+.language-option[aria-current='true'] { color: var(--purple); background: var(--lavender); box-shadow: 0 1px 2px #29263810; }
+.language-option:hover { color: var(--purple); }
+.language-option:focus-visible { outline-offset: 2px; }
+.footer-language { display: block; margin-top: 3px; }
+.site-header .nav-actions { gap: 9px; }
+.site-header .nav-shell { column-gap: 9px; }
+.site-header .main-nav { min-width: 0; }
+html[data-theme-ready='true'] .language-toggle,
+html[data-theme-ready='true'] .language-option { transition: color var(--theme-duration) var(--theme-easing), background-color var(--theme-duration) var(--theme-easing), border-color var(--theme-duration) var(--theme-easing); }
+html[lang='fr'] h2 { font-size: clamp(27px, 5.1vw, 45px); }
+html[lang='fr'] .project-device-label { letter-spacing: .12em; }
+@media (min-width: 900px) {
+  .site-header .main-nav { gap: clamp(10px, 1.65vw, 23px); }
+  .site-header .nav-actions { margin-left: 7px; }
+  .site-header .nav-hello { display: none; }
+}
+@media (min-width: 1180px) { .site-header .nav-hello { display: inline-flex; } }
+@media (max-width: 899px) {
+  .language-option { min-width: 44px; min-height: 44px; }
+  .language-toggle { padding: 0; }
+  .site-header .nav-hello { display: none; }
+  .site-header .theme-button { width: 44px; min-width: 44px; padding: 0; }
+  .site-header .theme-button-label { display: none; }
+  .main-nav a { white-space: nowrap; }
+  html[lang='fr'] .main-nav a { font-size: 11px; }
+}
+@media (max-width: 559px) {
+  .site-header .brand > span:last-child { display: none; }
+  .site-header .brand { min-width: 44px; }
+  .site-header .nav-actions { gap: 7px; }
+  .site-header .main-nav { gap: 2px; }
+  .site-header .nav-shell { padding-top: 8px; }
+  html[lang='fr'] .hero-value { font-size: 14px; line-height: 1.65; }
+  html[lang='fr'] .hero-actions { gap: 8px; }
+  html[lang='fr'] .hero-actions .button { font-size: 12px; padding-inline: 12px; gap: 8px; }
+  html[lang='fr'] .hero-footnote { font-size: 11px; }
+}
+@media (prefers-reduced-motion: reduce) { .language-toggle, .language-option { transition: none !important; } }

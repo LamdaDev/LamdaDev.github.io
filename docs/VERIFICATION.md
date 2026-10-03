@@ -161,3 +161,21 @@ node scripts/inspect-page.mjs
 - The two project images are user-supplied screenshots. The TransitOps frame trims its source image's page gutters/header; the GitToCampus phone frame preserves the full portrait image.
 - Factual portfolio content is based on the supplied prompt and documents. The implementation does not independently certify employment history or project outcomes.
 - No publishing or deployment is part of these checks.
+
+## English/French and café music verification
+
+The final bilingual and café music release passed the production build/typecheck, all 46 Chromium browser tests (37 existing checks plus nine new acceptance checks), and all six animation sequence tests. No model geometry or animation choreography changed.
+
+- English and French both have prerendered content, document language, titles, descriptions, alternate-language links and native language navigation. `/fr/` remains readable without JavaScript.
+- Language selection persists across visits. Explicit English links override a saved French preference; browser history, query parameters and section hashes remain consistent.
+- Translation preserves the existing canvas, paused scene clocks, selected boba, theme, open disclosures, personal notes and music playback. Résumé facts, company names, technology names, logos, screenshots and external links retain their meaning. The French résumé link identifies the downloadable PDF as English.
+- French layout checks covered 320, 390, 768, 900, 1024 and 1440px widths. Independent scene review at 320×568 and 667×375 checked all 15 notes and five viewers, including focus, rotation, Escape and focus restoration. A shorter French gym viewer title keeps Close within the 320px panel.
+- The original 51.9-second instrumental MP3 is local and is requested only after Play. Actual native playback, looping, keyboard seek/volume, mute, pause, silent reload, hidden-page pause, canceled loading and failure/retry all passed. Switching language keeps the same audio element and current playback.
+- The player is hidden until hydration, respects reduced motion and exposes labeled controls. It sits directly to the left of About in the main navigation; its panel opens below the header, so the former floating-player footer padding has been removed. Day/night player and French page screenshots were inspected.
+
+The build reports core JavaScript at 264.02 kB (83.60 kB gzip), CSS at 62.58 kB (13.22 kB gzip), and the lazy scene chunk at 952.28 kB (255.90 kB gzip). The audio asset is 1,039,217 bytes and is not part of initial media loading. These sizes are build outputs, not measured connection or rendering performance.
+
+Verification uses Chromium and software WebGL, not a physical phone or Safari. The audio was decoded and tested for playback and signal clipping; its musical feel still benefits from a human listen. Decorative text on the original 3D props remains part of the scene artwork; descriptions, controls and personal notes are translated. The downloadable résumé remains the supplied English PDF.
+
+Release publication uses the existing GitHub Pages workflow on `main`. The README remains unchanged.
+The navigation placement follow-up passed a fresh production build/typecheck, 12 targeted language/music/mobile browser tests, and five final responsive layout checks after the small-phone panel adjustment. English and French screenshots were inspected at widths from 320 to 1440px. Independent 1440×1000 and 667×375 checks verified Escape and focus restoration, outside-click and focus-leave dismissal, uninterrupted playback when controls close, and a stable audio element during language changes. No new audio asset or dependencies were introduced by the move. The final position to the left of About passed checks in both languages across ten desktop/mobile layouts, followed by the complete 46-test browser suite and six animation tests before publication.

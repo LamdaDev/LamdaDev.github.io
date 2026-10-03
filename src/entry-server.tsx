@@ -1,3 +1,7 @@
-import { renderToString } from 'react-dom/server';
+﻿import { renderToString } from 'react-dom/server';
 import App from './App';
-export function render() { return renderToString(<App />); }
+import type { Language } from './i18n';
+
+export function render(language: Language = 'en') {
+  return renderToString(<App initialLanguage={language} />);
+}
