@@ -98,6 +98,10 @@ test('phone layouts expose the introduction and offer usable links without overf
         expect(rect!.y + rect!.height, `${selector} fits in the short phone screen`).toBeLessThanOrEqual(568);
       }
     }
+    // Open every disclosure first so controls inside More Projects are measured too.
+    await page.locator('details').evaluateAll(nodes => nodes.forEach(node => { (node as HTMLDetailsElement).open = true; }));
+    await expect(page.locator('details:not([open])')).toHaveCount(0);
+    await expect(page.locator('.project-card--transit .project-link')).toBeVisible();
     const controls = page.locator('.main-nav a, .brand, .site-header .motion-button, .hero-actions a, .resume-link, .project-link, .contact-email, .site-footer nav a, summary');
     for (const control of await controls.all()) {
       const rect = await control.boundingBox();
@@ -107,8 +111,6 @@ test('phone layouts expose the introduction and offer usable links without overf
       expect(rect!.x).toBeGreaterThanOrEqual(0);
       expect(rect!.x + rect!.width).toBeLessThanOrEqual(width + 1);
     }
-    await page.locator('details').evaluateAll(nodes => nodes.forEach(node => { (node as HTMLDetailsElement).open = true; }));
-    await expect(page.locator('details:not([open])')).toHaveCount(0);
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
     const overflows = await page.locator('.hero-value, .job-content, .project-body, .education-card, .contact-email').evaluateAll(nodes => nodes.filter(node => node.scrollWidth > node.clientWidth + 1).map(node => node.className));
     expect(overflows).toEqual([]);

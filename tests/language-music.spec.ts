@@ -30,10 +30,12 @@ test('language changes translate real content without resetting scene or disclos
   await expect(page.locator('.main-nav')).toContainText('Compétences');
   await expect(page.locator('#about')).toContainText('Université Concordia');
   await expect(page.locator('.skill-card h3').nth(3)).toHaveText('Infonuagique et données');
-  await expect(page.locator('.project-date').first()).toHaveText('Juillet 2026 – Aujourd’hui');
-  await expect(page.locator('#experience')).toContainText('30,000,000+ enregistrements');
+  await expect(page.locator('.project-date').first()).toHaveText('Septembre 2026');
+  await expect(page.locator('.more-projects > summary')).toHaveText('Plus de projets');
+  await expect(page.locator('#experience')).toContainText('plus de 30 millions d’enregistrements');
   await expect(page.locator('#experience')).toContainText('99 % de couverture');
-  await expect(page.locator('#experience')).toContainText('60 minutes par exécution');
+  await expect(page.locator('#experience')).toContainText('130+ tests Robot Framework');
+  await expect(page.locator('#experience')).toContainText('Temps d’exécution réduit de 60 minutes');
   await expect(page.locator('.experience-entry h3')).toHaveText(['Ericsson', 'The CSL Group Inc.', 'Ubisoft', 'Categen Ventures']);
   await expect(page.locator('.hero-resume')).toContainText('PDF · EN');
   await expect(page.locator('.hero-resume')).toHaveAttribute('aria-label', /en anglais/);
@@ -49,7 +51,7 @@ test('language changes translate real content without resetting scene or disclos
   expect(await page.locator('body').innerText()).not.toContain('\u2014');
   await page.getByRole('link', { name: 'English', exact: true }).click();
   await expect(page.locator('html')).toHaveAttribute('lang', 'en');
-  await expect(page.locator('.project-date').first()).toHaveText('July 2026 – Present');
+  await expect(page.locator('.project-date').first()).toHaveText('September 2026');
   await expect(page.locator('[data-prop-note="hero-star"]')).toContainText('A team effort worth celebrating');
   expect(errors).toEqual([]);
 });

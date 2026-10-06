@@ -10,7 +10,7 @@ const expectedSkills = [
   'Node.js', 'Express.js', 'REST APIs', 'Kubernetes', 'Docker', 'Kafka', 'Linux', 'CI/CD',
   'AWS', 'Microsoft Azure', 'Databricks', 'Snowflake', 'PostgreSQL', 'SQL Server', 'MySQL', 'MongoDB', 'GraphQL',
   'Git', 'GitLab', 'Gerrit', 'Jenkins', 'SonarCloud', 'Jest', 'Postman', 'Agile/Scrum',
-  'Figma', 'Power BI', 'Azure DevOps', 'AMPScript', 'Salesforce Marketing Cloud', 'GeoJSON', 'GTFS', 'Google Maps', 'Google Calendar',
+  'Figma', 'Power BI', 'Azure DevOps', 'AMPscript', 'Salesforce Marketing Cloud', 'GeoJSON', 'GTFS', 'Google Maps', 'Google Calendar',
 ];
 
 async function openPortfolio(page: Page) {
@@ -47,31 +47,50 @@ test('renders complete factual content, native anchors and valid local downloads
   const skillText = await page.locator('.skill-card li').allTextContents();
   expect(skillText.sort()).toEqual([...expectedSkills].sort());
   expect(skillText).toHaveLength(49);
-  await expect(page.locator('.project-card')).toHaveCount(2);
-  await expect(page.locator('.project-card h3')).toHaveText(['TransitOps Montreal', 'GitToCampus']);
-  await expect(page.locator('.project-date')).toHaveText(['July 2026 – Present', 'January 2026 – April 2026']);
-  await expect(page.locator('.project-status')).toHaveText(['In progress', '1st in cohort']);
-  await expect(page.locator('.project-card').first()).toContainText('still in the design stage');
-  await expect(page.locator('.project-card').last()).toContainText('11-member Agile team');
-  await expect(page.locator('.project-card').last()).toContainText('first place in the cohort by the professor');
+  await expect(page.locator('#projects > .project-grid > .project-card h3')).toHaveText(['Babbli', 'GitToCampus']);
+  await expect(page.locator('.more-projects .project-card h3')).toHaveText(['TransitOps Montreal']);
+  await expect(page.locator('.project-card')).toHaveCount(3);
+  await expect(page.locator('.project-date')).toHaveText(['September 2026', 'January 2026 – April 2026', 'July 2026 – Present']);
+  await expect(page.locator('.project-status')).toHaveText(['4 hackathon awards', '1st in cohort', 'In progress']);
+  const babbli = page.locator('.project-card--babbli');
+  for (const fact of ['Hack the Hill III', '17+ quintillion conversations', '1,600+ automated tests', 'Mandarin, Korean, and Japanese']) {
+    await expect(babbli).toContainText(fact);
+  }
+  // The four awards sit in the card's main text, not behind "Inside the build".
+  const awards = babbli.locator('.project-awards');
+  await expect(awards).toBeVisible();
+  await expect(awards.locator('strong')).toHaveText(['Winner of General Challenge: Third Place', 'Best Project Built with ElevenLabs', 'Best Educational Project', 'Best UI/UX']);
+  await expect(awards).toContainText('(Best Use of ElevenLabs)');
+  await expect(awards).toContainText('(MathemaTech: Education for Everyone)');
+  await expect(babbli.locator('.project-device-label')).toHaveCount(0);
+  await expect(page.locator('.project-card--campus')).toContainText('11-member Agile team');
+  await expect(page.locator('.project-card--campus')).toContainText('first place in the cohort by the professor');
+  await expect(page.locator('.project-card--transit')).toContainText('still in the design stage');
   await expect(page.locator('.concept-label')).toHaveCount(0);
+  await page.locator('.more-projects > summary').click();
   const projectScreenshots = page.locator('.project-preview img');
-  await expect(projectScreenshots).toHaveCount(2);
+  await expect(projectScreenshots).toHaveCount(3);
   for (const image of await projectScreenshots.all()) {
     await image.scrollIntoViewIfNeeded();
     await expect.poll(() => image.evaluate((element: HTMLImageElement) => element.complete && element.naturalWidth > 0)).toBe(true);
-    await expect(image).toHaveAttribute('alt', /TransitOps|GitToCampus/);
+    await expect(image).toHaveAttribute('alt', /Babbli|TransitOps|GitToCampus/);
   }
   expect(await page.locator('.project-link').evaluateAll(anchors => anchors.map(anchor => anchor.getAttribute('href')))).toEqual([
-    'https://github.com/LamdaDev/TransitOps-Montreal', 'https://github.com/LamdaDev/GitToCampus',
+    'https://babbli.study/', 'https://devpost.com/software/babbli', 'https://github.com/LamdaDev/Babbli',
+    'https://github.com/LamdaDev/GitToCampus', 'https://github.com/LamdaDev/TransitOps-Montreal',
   ]);
+  await expect(babbli.locator('.project-link')).toHaveText(['Try Babbli (opens in a new tab)', 'View on Devpost for Babbli (opens in a new tab)', 'View repository for Babbli (opens in a new tab)']);
   await expect(page.locator('.experience-entry h3')).toHaveText(['Ericsson', 'The CSL Group Inc.', 'Ubisoft', 'Categen Ventures']);
   await expect(page.locator('.experience-date')).toHaveText([
     'January 2026 – August 2026', 'May 2024 – August 2024 and May 2025 – August 2025',
     'September 2023 – December 2023', 'April 2022 – July 2022',
   ]);
-  for (const fact of ['6 raise/clear alarm events', '3 fault conditions', '99% code coverage', '30,000,000+ production shipment records', '10,000+ SharePoint records', '10+ Power BI datasets', '60 minutes per run']) {
+  // Facts from the October 2026 résumé; superseded figures must not linger.
+  for (const fact of ['network-slicing microservice', '99% unit test coverage', '130+ Robot Framework tests', '100% passing rate', '30M+ real-time shipment records', '10K+ SharePoint records', '12 Power BI dashboards', '7+ major Ubisoft releases', 'lazy loading and skeleton screens']) {
     await expect(page.locator('#experience')).toContainText(fact);
+  }
+  for (const outdated of ['6 raise/clear alarm events', 'SonarCloud', '30,000,000+', '10+ Power BI datasets', 'ramping up on the language']) {
+    await expect(page.locator('#experience')).not.toContainText(outdated);
   }
   await expect(page.locator('.education-card')).toContainText('September 2022 – May 2027 (expected)');
   for (const course of ['Computer Architecture', 'Data Structures & Algorithms', 'Operating Systems', 'Artificial Intelligence', 'Deep Learning', 'Databases', 'Object-Oriented Programming']) {
@@ -155,6 +174,7 @@ test('keyboard focus, skip navigation and native details remain operable', async
 test('production content and PNG previews work without JavaScript', async ({ browser, baseURL, request }) => {
   const html = await request.get('/');
   const body = await html.text();
+  expect(body).toContain('Babbli');
   expect(body).toContain('TransitOps Montreal');
   expect(body).toContain('Software Developer Intern');
   const context = await browser.newContext({ javaScriptEnabled: false, baseURL, viewport: { width: 390, height: 844 } });
@@ -162,7 +182,7 @@ test('production content and PNG previews work without JavaScript', async ({ bro
   const page = await context.newPage();
   try {
     await openPortfolio(page);
-    await expect(page.locator('.project-card')).toHaveCount(2);
+    await expect(page.locator('.project-card')).toHaveCount(3);
     await expect(page.locator('.experience-entry')).toHaveCount(4);
     await expect(page.locator('#motion-toggle')).toBeHidden();
     await expect(page.locator('canvas')).toHaveCount(0);
@@ -177,6 +197,12 @@ test('production content and PNG previews work without JavaScript', async ({ bro
     await expect(page.locator('.contact-email')).toBeVisible();
     await page.locator('.education-card summary').click();
     await expect(page.locator('.education-card details')).toHaveAttribute('open', '');
+    // The native disclosure reveals additional projects without script. It runs last:
+    // without JavaScript, Playwright's stability checks cannot settle mid-transition.
+    await expect(page.locator('.project-card--transit')).toBeHidden();
+    await page.locator('.more-projects > summary').click();
+    await expect(page.locator('.more-projects')).toHaveAttribute('open', '');
+    await expect(page.locator('.project-card--transit')).toBeVisible();
   } finally { await context.close(); }
 });
 
@@ -282,7 +308,7 @@ test('WebGL-unavailable devices retain artwork and functioning portfolio links',
   await expect(page.locator('[data-rendered="true"]')).toHaveCount(0);
   await page.getByRole('link', { name: 'View my work', exact: true }).click();
   await expect(page).toHaveURL(/#projects$/);
-  await expect(page.locator('.project-card h3')).toHaveText(['TransitOps Montreal', 'GitToCampus']);
+  await expect(page.locator('.project-card h3')).toHaveText(['Babbli', 'GitToCampus', 'TransitOps Montreal']);
 });
 
 test('a scene factory error preserves its preview and the DOM content', async ({ page }) => {
@@ -301,7 +327,7 @@ test('a scene factory error preserves its preview and the DOM content', async ({
   await expect(hero).not.toHaveAttribute('data-rendered', 'true');
   await expect(hero.locator('img')).toBeVisible();
   await expect(page.locator('h1')).toBeVisible();
-  await expect(page.locator('.project-card')).toHaveCount(2);
+  await expect(page.locator('.project-card')).toHaveCount(3);
 });
 
 test('losing the actual WebGL context restores the static preview', async ({ page }) => {
@@ -321,5 +347,41 @@ test('losing the actual WebGL context restores the static preview', async ({ pag
   await expect(hero.locator('img')).toBeVisible();
   await expect(page.locator('h1')).toBeVisible();
   await expect(page.getByRole('link', { name: 'View my work', exact: true })).toBeVisible();
-  await expect(page.locator('.project-card')).toHaveCount(2);
+  await expect(page.locator('.project-card')).toHaveCount(3);
+});
+
+test('More Projects reveals further work in place from the keyboard, in both languages', async ({ page }) => {
+  await openPortfolio(page);
+  const more = page.locator('.more-projects');
+  const toggle = more.locator('> summary');
+  const transit = more.locator('.project-card--transit');
+  await expect(toggle).toHaveText('More Projects');
+  await expect(more).not.toHaveAttribute('open', '');
+  await expect(transit).toBeHidden();
+  // Featured work comes first; the tab closes the Projects section.
+  const lastFeatured = await page.locator('#projects > .project-grid > .project-card').last().boundingBox();
+  const tab = await toggle.boundingBox();
+  expect(tab!.y).toBeGreaterThan(lastFeatured!.y + lastFeatured!.height);
+  await toggle.focus();
+  await page.keyboard.press('Enter');
+  await expect(more).toHaveAttribute('open', '');
+  await expect(transit).toBeVisible();
+  await expect(transit.locator('h3')).toHaveText('TransitOps Montreal');
+  await expect(transit.locator('.project-link')).toHaveAttribute('href', 'https://github.com/LamdaDev/TransitOps-Montreal');
+  const image = transit.locator('.project-preview img');
+  await image.scrollIntoViewIfNeeded();
+  await expect.poll(() => image.evaluate((element: HTMLImageElement) => element.complete && element.naturalWidth > 0)).toBe(true);
+  // Nested cards keep their own spacing rather than inheriting disclosure list styles.
+  expect(await transit.locator('.tech-badges').evaluate(list => getComputedStyle(list).paddingLeft)).toBe('0px');
+  await toggle.focus();
+  await page.keyboard.press('Space');
+  await expect(more).not.toHaveAttribute('open', '');
+  await expect(transit).toBeHidden();
+  await page.getByRole('link', { name: 'Français', exact: true }).click();
+  await expect(page.locator('html')).toHaveAttribute('lang', 'fr');
+  await expect(toggle).toHaveText('Plus de projets');
+  await toggle.click();
+  await expect(transit.locator('.project-date')).toHaveText('Juillet 2026 – Aujourd’hui');
+  await expect(page.locator('.project-card--babbli .project-link')).toHaveText(['Essayer Babbli (nouvel onglet)', 'Voir sur Devpost la fiche de Babbli (nouvel onglet)', 'Voir le dépôt de Babbli (nouvel onglet)']);
+  await expect(page.locator('.project-card--babbli .project-awards strong')).toHaveText(['Gagnant du défi général : troisième place', 'Meilleur projet conçu avec ElevenLabs', 'Meilleur projet éducatif', 'Meilleure UI/UX']);
 });

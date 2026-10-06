@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { Fragment, type ReactNode } from 'react';
 import { SceneSlot } from './components/SceneSlot';
 import { MotionButton } from './components/MotionButton';
 import { ThemeButton } from './components/ThemeButton';
@@ -6,10 +6,10 @@ import { BobaPicker } from './components/BobaPicker';
 import { LanguageToggle } from './components/LanguageToggle';
 import { MusicPlayer } from './components/MusicPlayer';
 import { ExploreSceneButton, SceneExplorerProvider } from './components/SceneExplorer';
-import { coursework, experience, links, projects, skills } from './content';
+import { coursework, experience, links, moreProjects, projects, skills } from './content';
 import { frContent } from './content.fr';
 import { LanguageProvider, useLanguage, type Language } from './i18n';
-type IconName = 'arrow' | 'external' | 'download' | 'code' | 'window' | 'server' | 'data' | 'tool' | 'star' | 'heart' | 'mail' | 'boba' | 'gym' | 'game';
+type IconName = 'arrow' | 'external' | 'download' | 'code' | 'window' | 'server' | 'data' | 'tool' | 'star' | 'heart' | 'mail' | 'boba' | 'gym' | 'game' | 'trophy' | 'chevron';
 
 function Icon({ name, className = '' }: { name: IconName; className?: string }) {
   const paths: Record<IconName, ReactNode> = {
@@ -27,6 +27,8 @@ function Icon({ name, className = '' }: { name: IconName; className?: string }) 
     boba: <><path d="M6 7h12l-2 14H8L6 7Zm-1 0h14M12 7l2-6h4" /><path d="M10 16h.01M14 17h.01M12 12h.01" /></>,
     gym: <><path d="M7 12h10M4 7v10m3-12v14M17 5v14m3-12v10M2 12h2m16 0h2" /></>,
     game: <><path d="M7 7h10c3 0 7 14 2 12l-4-4H9l-4 4C0 21 4 7 7 7Z" /><path d="M8 10v4m-2-2h4m6-1h.01m2 2h.01" /></>,
+    trophy: <><path d="M7 4h10v4a5 5 0 0 1-10 0Z" /><path d="M7 5.5H4V7a3.5 3.5 0 0 0 3.5 3.5M17 5.5h3V7a3.5 3.5 0 0 1-3.5 3.5M12 13v4.5m-2.5 0h5M8 20.5h8" /></>,
+    chevron: <path d="m9 6 6 6-6 6" />,
   };
   return <svg className={`icon ${className}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{paths[name]}</svg>;
 }
@@ -74,23 +76,60 @@ export function CampusPreview() {
   </div>;
 }
 
+export function BabbliPreview() {
+  const { text } = useLanguage();
+  return <div className="project-preview project-preview--screenshot project-preview--babbli" id="babbli-preview">
+    <a className="project-window" href="/assets/projects/babbli.png" target="_blank" rel="noreferrer" aria-label={text('View the full Babbli screenshot (opens in a new tab)', 'Voir la capture complète de Babbli (nouvel onglet)')}>
+      <span className="project-browser-bar" aria-hidden="true"><span className="project-browser-dots"><i /><i /><i /></span><span>babbli.study</span></span>
+      <img src="/assets/projects/babbli.png" alt={text('Babbli’s Parisian café scenario, where the AI barista Camille greets the learner in French and offers three ways to reply', 'Le scénario du café parisien de Babbli, où la barista IA Camille accueille l’apprenant en français et propose trois façons de répondre')} width="1920" height="989" loading="lazy" decoding="async" />
+    </a>
+    <a className="project-device-note" href="/assets/projects/babbli.png" target="_blank" rel="noreferrer">{text('View full screenshot', 'Voir la capture complète')}<Icon name="external" /><span className="sr-only">{text(' (opens in a new tab)', ' (nouvel onglet)')}</span></a>
+  </div>;
+}
+
+type ProjectLink = { kind: 'site' | 'devpost' | 'repo'; url: string };
+type ProjectAward = { icon: string; name: string; note?: string };
 type PortfolioProject = {
-  id: string; title: string; dates: string; status: string; caption: string;
-  description: string; tech: readonly string[]; details: readonly string[]; url: string;
+  id: 'babbli' | 'campus' | 'transit'; title: string; dates: string; status: string; caption: string;
+  description: string; awards?: readonly ProjectAward[]; tech: readonly string[]; details: readonly string[]; links: readonly ProjectLink[];
 };
+const projectPreviews = { babbli: BabbliPreview, campus: CampusPreview, transit: TransitPreview };
+const statusIcons: Record<PortfolioProject['id'], ReactNode> = { babbli: <Icon name="trophy" />, campus: <Icon name="star" />, transit: <span className="status-dot" /> };
+
+function ProjectLinks({ project }: { project: PortfolioProject }) {
+  const { text } = useLanguage();
+  // Visible text starts each accessible name; the hidden suffix names the project and new tab.
+  const labels: Record<ProjectLink['kind'], [string, string]> = {
+    site: [text(`Try ${project.title}`, `Essayer ${project.title}`), text(' (opens in a new tab)', ' (nouvel onglet)')],
+    devpost: [text('View on Devpost', 'Voir sur Devpost'), text(` for ${project.title} (opens in a new tab)`, ` la fiche de ${project.title} (nouvel onglet)`)],
+    repo: [text('View repository', 'Voir le dépôt'), text(` for ${project.title} (opens in a new tab)`, ` de ${project.title} (nouvel onglet)`)],
+  };
+  return <div className="project-links">{project.links.map(link => <a className="project-link" key={link.kind} href={link.url} target="_blank" rel="noreferrer">{labels[link.kind][0]}<Icon name="external" /><span className="sr-only">{labels[link.kind][1]}</span></a>)}</div>;
+}
 
 function ProjectCard({ project }: { project: PortfolioProject }) {
   const { text } = useLanguage();
+  const Preview = projectPreviews[project.id];
   return <article className={`project-card project-card--${project.id}`}>
-    {project.id === 'transit' ? <TransitPreview /> : <CampusPreview />}
+    <Preview />
     <div className="project-body">
-      <div className="project-topline"><span className={`project-status status-${project.id}`}>{project.id === 'transit' ? <span className="status-dot" /> : <Icon name="star" />}{project.status}</span><span className="project-date">{project.dates}</span></div>
+      <div className="project-topline"><span className={`project-status status-${project.id}`}>{statusIcons[project.id]}{project.status}</span><span className="project-date">{project.dates}</span></div>
       <h3>{project.title}</h3><p className="project-caption">{project.caption}</p><p className="project-description">{project.description}</p>
+      {project.awards && <ul className="project-awards" aria-label={text('Hackathon awards', 'Prix remportés au hackathon')}>{project.awards.map(award => <li key={award.name}><span className="project-award-icon" aria-hidden="true">{award.icon}</span><span><strong>{award.name}</strong>{award.note && ` (${award.note})`}</span></li>)}</ul>}
       <ul className="tech-badges" aria-label={text('Technologies', 'Technologies utilisées')}>{project.tech.map(tech => <li key={tech}>{tech}</li>)}</ul>
       <details className="project-details" open={project.id === 'campus'}><summary>{text('Inside the build', 'Dans les coulisses du projet')}<span aria-hidden="true">+</span></summary><ul>{project.details.map((detail, index) => <li key={index}>{detail}</li>)}</ul></details>
-      <a className="project-link" href={project.url} target="_blank" rel="noreferrer">{text('View repository', 'Voir le dépôt')}<Icon name="external" /><span className="sr-only">{text(` for ${project.title} (opens in a new tab)`, ` de ${project.title} (nouvel onglet)`)}</span></a>
+      <ProjectLinks project={project} />
     </div>
   </article>;
+}
+
+/** Native disclosure: additional work stays reachable without JavaScript. */
+function MoreProjects({ projects }: { projects: readonly PortfolioProject[] }) {
+  const { text } = useLanguage();
+  return <details className="more-projects content-layer">
+    <summary>{text('More Projects', 'Plus de projets')}<Icon name="chevron" /></summary>
+    <div className="project-grid more-projects-grid">{projects.map(project => <ProjectCard key={project.id} project={project} />)}</div>
+  </details>;
 }
 
 function ResumeLink({ hero = false }: { hero?: boolean }) {
@@ -103,7 +142,7 @@ function ResumeLink({ hero = false }: { hero?: boolean }) {
 
 function Portfolio() {
   const { language, text } = useLanguage();
-  const content = language === 'fr' ? frContent : { coursework, experience, projects, skills };
+  const content = language === 'fr' ? frContent : { coursework, experience, projects, moreProjects, skills };
   return <SceneExplorerProvider>
     <a className="skip-link" href="#main">{text('Skip to content', 'Aller au contenu')}</a>
     <header className="site-header"><div className="nav-shell"><Brand />
@@ -146,10 +185,10 @@ function Portfolio() {
       <section className="section shell projects-section" id="projects" aria-labelledby="projects-title"><div className="projects-heading">
         <div className="projects-scene"><SceneWindow kind="projects" label={text('THE FOCUS DESK', 'LE BUREAU DE TRAVAIL')} caption={text('Code. Sip. Recharge. Repeat.', 'Coder. Boire. Recharger. Recommencer.')} /></div>
         <div className="projects-intro content-layer"><SectionLabel number="03">{text('SELECTED WORK', 'PROJETS CHOISIS')}</SectionLabel><h2 id="projects-title">{text('Built to solve', 'Des projets pour résoudre')}<br />{text('something ', 'des problèmes ')}<span className="underline-accent">{text('real.', 'concrets.')}</span></h2><p className="section-intro">{text('Two projects that bring together practical problems, thoughtful interfaces, and the systems behind them.', 'Deux projets qui réunissent des problèmes concrets, des interfaces bien pensées et les systèmes qui les soutiennent.')}</p><span className="project-count"><span aria-hidden="true">⌁</span>{text(' A closer look at what I’ve been building', ' Un aperçu de ce que je construis')}</span></div>
-      </div><div className="project-grid content-layer">{content.projects.map(project => <ProjectCard key={project.id} project={project} />)}</div></section>
+      </div><div className="project-grid content-layer">{content.projects.map(project => <ProjectCard key={project.id} project={project} />)}</div><MoreProjects projects={content.moreProjects} /></section>
       <section className="section shell experience-section" id="experience" aria-labelledby="experience-title"><div className="experience-layout">
         <div className="experience-intro"><SceneWindow kind="experience" label={text('THE TRAINING ROOM', 'LA SALLE D’ENTRAÎNEMENT')} caption={text('Good work takes a few reps.', 'Le bon travail demande quelques répétitions.')} /><div className="experience-heading content-layer"><SectionLabel number="04">{text('EXPERIENCE', 'EXPÉRIENCE')}</SectionLabel><h2 id="experience-title">{text('Where I’ve', 'Là où j’ai')}<br />{text('put in the reps', 'fait mes preuves')}<span className="purple-text">.</span></h2><p className="section-intro">{text('Building, learning, and contributing alongside teams in Montreal.', 'Construire, apprendre et contribuer avec des équipes à Montréal.')}</p></div></div>
-        <ol className="experience-timeline content-layer">{content.experience.map(job => <li className="experience-entry" key={job.company}><div className={`company-mark tone-${job.tone}`} aria-hidden="true"><img className="company-logo" src={job.logo} alt="" width="128" height="128" loading="lazy" decoding="async" /></div><div className="job-content"><p className="experience-date">{job.dates}</p><h3>{job.company}</h3><p className="job-role">{job.role}<span>{text('Montreal, QC', 'Montréal, QC')}</span></p><p className="job-description">{job.description}</p><p className="job-highlight"><Icon name="star" />{job.highlight}</p><details><summary>{text('More about this role', 'En savoir plus sur ce poste')}<span aria-hidden="true">+</span></summary><ul>{job.details.map((detail, index) => <li key={index}>{detail}</li>)}</ul></details></div></li>)}</ol>
+        <ol className="experience-timeline content-layer">{content.experience.map(job => <li className="experience-entry" key={job.company}><div className={`company-mark tone-${job.tone}`} aria-hidden="true"><img className="company-logo" src={job.logo} alt="" width="128" height="128" loading="lazy" decoding="async" /></div><div className="job-content"><p className="experience-date">{job.dates}</p><h3>{job.company}</h3><p className="job-role">{job.role}<span>{text('Montreal, QC', 'Montréal, QC')}</span></p><p className="job-description">{job.description}</p><p className="job-highlight"><Icon name="star" /><span>{job.highlight.split(' · ').map((part, index, parts) => <Fragment key={part}>{index > 0 && ' '}<span className="job-highlight-part">{part}{index < parts.length - 1 && '\u00a0·'}</span></Fragment>)}</span></p><details><summary>{text('More about this role', 'En savoir plus sur ce poste')}<span aria-hidden="true">+</span></summary><ul>{job.details.map((detail, index) => <li key={index}>{detail}</li>)}</ul></details></div></li>)}</ol>
       </div></section>
       <section className="contact-section shell" id="contact" aria-labelledby="contact-title"><div className="contact-panel"><div className="contact-copy content-layer"><SectionLabel number="05">{text('LET’S CONNECT', 'FAISONS CONNAISSANCE')}</SectionLabel><h2 id="contact-title">{text('Good things start', 'Les bonnes idées commencent')}<br />{text('with a ', 'par un ')}<span className="underline-accent">{text('hello.', 'bonjour.')}</span></h2><p>{text('Have a software engineering opportunity or something interesting to build together? I’d love to hear about it.', 'Vous avez une occasion en génie logiciel ou un projet intéressant à construire ensemble ? J’aimerais en discuter.')}</p><a className="contact-email" href={`mailto:${links.email}`}>{links.email}<Icon name="external" /></a><div className="contact-actions"><a className="button button-primary" href={`mailto:${links.email}`}>{text('Let’s talk', 'Discutons')}<Icon name="arrow" /></a><ResumeLink /></div></div><div className="contact-art" aria-hidden="true"><PixelStar className="contact-star-one" /><span className="mail-shadow"></span><div className="pixel-envelope"><span className="envelope-back"></span><span className="envelope-note"><svg viewBox="0 0 40 34"><path d="M0 4h4V0h12v4h8V0h12v4h4v16h-4v4h-4v4h-4v4h-4v2h-8v-2h-4v-4H8v-4H4v-4H0Z" fill="currentColor" /></svg></span><span className="envelope-front"></span></div><PixelStar className="contact-star-two" /><span className="contact-art-label pixel-label">{text('SAY HELLO!', 'DITES BONJOUR !')}</span></div></div></section>
     </main>

@@ -2,6 +2,16 @@
 
 This record describes checks on the local portfolio implementation. It does not establish accessibility conformance, cross-browser certification, or production performance guarantees.
 
+## Résumé refresh, Babbli and More Projects - October 6, 2026
+
+Read the new one-page `Daniel_Lam_CV_SWE.pdf`, supplied at `public/Daniel_Lam_CV_SWE.pdf`, and moved it to `public/assets/` so the existing download URL and filename are unchanged. The public and built résumé downloads match the supplied file: SHA-256 `77fbd753730a020e5f1c99d2d05110814e9948ed4dd1bd8324b01b4df8348ddd`.
+
+All four employers' summaries, highlights and role details now follow its bullets in English and French. Figures the résumé no longer states were removed: the six alarm events and three fault conditions, SonarCloud as the coverage source, the 10+ Power BI datasets and the Dart ramp-up note. New facts include the network-slicing microservice, 130+ Robot Framework tests at a 100% passing rate, 30M+ real-time shipment records with runtime cut by 60 minutes, 12 validated Power BI dashboards, CRM campaigns for 7+ major Ubisoft releases, and Categen's point-of-sale delivery system. The AMPscript skill chip follows the résumé's spelling, and highlight phrases wrap only at their `·` separators. Education, coursework, the five résumé skill groups and the GitToCampus facts already matched.
+
+Babbli replaces TransitOps Montreal as the first featured project. Its card's main text lists the four Hack the Hill III awards Daniel supplied (Winner of General Challenge: Third Place; Best Project Built with ElevenLabs; Best Educational Project; Best UI/UX), and "Inside the build" holds the résumé's three build bullets. Its links and date come from the résumé and its Devpost page (`https://babbli.study/`, `https://devpost.com/software/babbli`, `https://github.com/LamdaDev/Babbli`; Hack the Hill III, September 25 to 27, 2026). The preview, without a device label, is Devpost's main image, the Parisian café barista scene: a 1920×989 PNG of 561,207 bytes, SHA-256 `cff12c973946a660f71c6295a355d02337620f9a561bbb650967174294ba74b5`. TransitOps Montreal moved into a native "More Projects" disclosure after the featured cards. It opens without JavaScript and animates its height in browsers that support `::details-content`.
+
+Type checking, the production build, all six sequence tests and all 47 browser tests passed (one new More Projects check; browser suite: 2.1 minutes), using Chromium/software WebGL. Day and night, English and French captures of the project cards, the open disclosure and the expanded experience timeline were inspected at 1440, 1100, 768, 390 and 320px; the suite was rerun in full after the awards list was added. The theme test "…quick reversal continues from its current color" is intermittently flaky: across 18 repeated runs it failed 4 times on this change and once on an untouched build of the previous commit, each time because the final scene night mix settled near 1e-9 instead of exactly 0. No model geometry or animation changed, so the model checks were not rerun.
+
 ## Resume and punctuation refresh - October 1, 2026
 
 Read the supplied one-page `Daniel_Lam_CV_SWE.pdf` and compared all four employment entries against its text and rendered page. Updated CSL's migration count to 30,000,000+ production shipment records into Snowflake and corrected the 10,000+ record source to SharePoint. Other employers' roles, dates, and accomplishments already match. The education date now ends in May 2027, labeled expected because it is a future date.
@@ -85,7 +95,7 @@ The user-supplied TransitOps and GitToCampus screenshots replace both concept il
 | Static fallbacks | All five PNGs were regenerated from the actual Three.js scenes after final framing and gym layout corrections. |
 | Boba fallback variants | About previews were regenerated for milk tea, matcha, and taro; seven total scene preview assets are available. |
 | Greeting fallback | Hero preview regenerated from the raised-hand pose at 1.9 seconds, with HTML controls and decorations excluded from the image. |
-| Content and local assets | 49 skills, two projects, four employers, both CSL date ranges, the résumé PDF, and the five scene PNGs passed browser checks. |
+| Content and local assets | 49 skills, three projects (two featured and one under More Projects), four employers, both CSL date ranges, the résumé PDF, and the five scene PNGs passed browser checks. |
 | Opening layouts | The avatar and primary CTA are visible in the checked desktop, tablet, phone, and narrow layouts; no horizontal overflow was detected. |
 | Keyboard behavior | Skip link, visible focus, and expandable details passed the browser checks. |
 | Text contrast spot checks | WCAG luminance calculations: main copy 14.04:1, secondary copy 6.19:1, white primary-button text 5.86:1, purple section labels 4.66:1. The scroll cue and contact-art label were darkened after review. This is a check of selected CSS pairs, not a full accessibility audit. |
@@ -158,7 +168,7 @@ node scripts/inspect-page.mjs
 - The hidden-page test simulates the page-visibility event; it does not establish behavior under every operating system's background throttling policy.
 - No historical screenshot baseline was available, so visual regression against a previous design remains inconclusive.
 - Automated checks and selected keyboard observations do not replace a complete screen-reader and accessibility audit.
-- The two project images are user-supplied screenshots. The TransitOps frame trims its source image's page gutters/header; the GitToCampus phone frame preserves the full portrait image.
+- The three project images are user-supplied screenshots; Babbli's is the main image from its Devpost page. The TransitOps frame trims its source image's page gutters/header; the GitToCampus phone and Babbli browser frames preserve their full images.
 - Factual portfolio content is based on the supplied prompt and documents. The implementation does not independently certify employment history or project outcomes.
 - No publishing or deployment is part of these checks.
 

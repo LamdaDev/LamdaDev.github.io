@@ -310,7 +310,7 @@ test('the prerendered page does not offer enabled personal-detail controls witho
       await expect(fallback).toContainText(/JavaScript is off/i);
       await expect(fallback.locator('li')).toHaveCount(3);
     }
-    await expect(page.locator('.project-card')).toHaveCount(2);
+    await expect(page.locator('.project-card')).toHaveCount(3);
     await expect(page.locator('.contact-email')).toHaveAttribute('href', 'mailto:lam.daniel.123@hotmail.com');
   } finally { await context.close(); }
 });
